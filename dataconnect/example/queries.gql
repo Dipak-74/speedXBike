@@ -1,0 +1,64 @@
+mutation CreateBike($modelName: String!, $brand: String!, $price: Float!, $type: String!, $description: String, $year: Int, $color: String, $frameMaterial: String, $weight: Float, $imageUrl: String) @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users.") {
+  bike_insert(data: {
+    modelName: $modelName,
+    brand: $brand,
+    price: $price,
+    type: $type,
+    description: $description,
+    year: $year,
+    color: $color,
+    frameMaterial: $frameMaterial,
+    weight: $weight,
+    imageUrl: $imageUrl,
+    createdAt_expr: "request.time"
+  }) {
+    id
+  }
+}
+
+query ListAllBikes @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public") {
+  bikes {
+    id
+    modelName
+    brand
+    price
+    type
+    description
+    year
+    color
+    frameMaterial
+    weight
+    imageUrl
+    createdAt
+  }
+}
+
+query GetBikeById($id: UUID!) @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public") {
+  bike(id: $id) {
+    id
+    modelName
+    brand
+    price
+    type
+    description
+    year
+    color
+    frameMaterial
+    weight
+    imageUrl
+    createdAt
+  }
+}
+
+mutation CreateInquiry($message: String!, $bikeId: UUID!, $contactEmail: String, $contactPhone: String) @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users.") {
+  inquiry_insert(data: {
+    message: $message,
+    bikeId: $bikeId,
+    contactEmail: $contactEmail,
+    contactPhone: $contactPhone,
+    createdAt_expr: "request.time",
+    userId_expr: "auth.uid"
+  }) {
+    id
+  }
+}

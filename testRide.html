@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Test Ride</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+<style>
+body {
+    font-family: 'Poppins', sans-serif;
+    background:#1e293b;
+    color:white;
+    margin:0;
+    padding:20px;
+}
+.container {
+    max-width:500px;
+    margin:auto;
+    background: rgba(255,255,255,0.05);
+    padding:20px;
+    border-radius:15px;
+    backdrop-filter: blur(10px);
+}
+h2 { text-align:center; margin-bottom:20px; }
+input, select, button {
+    width:100%;
+    padding:10px;
+    margin:8px 0;
+    border:none;
+    border-radius:8px;
+}
+button {
+    background:#22c55e;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+button:hover { background:#16a34a; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🚀 Book Your Test Ride</h2>
+
+    <input type="text" id="bikeName" placeholder="Bike Name" readonly>
+    <input type="text" id="userName" placeholder="Your Name">
+    <input type="email" id="userEmail" placeholder="Email">
+    <input type="tel" id="userPhone" placeholder="Phone Number">
+    <input type="date" id="rideDate">
+    <input type="time" id="rideTime">
+    <select id="location">
+        <option value="">Select Location</option>
+        <option>City A</option>
+        <option>City B</option>
+        <option>City C</option>
+    </select>
+
+    <button id="bookBtn">Book Test Ride</button>
+</div>
+
+<!-- 🔥 FIREBASE CDN (no module import needed) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<script>
+// 🔹 FIREBASE CONFIG
+const firebaseConfig = {
+    apiKey: "AIzaSyAhWXQg6VYvz8JcrPu42Y__oGkARfi0x1U",
+    authDomain: "bikeroom-765b8.firebaseapp.com",
+    projectId: "bikeroom-765b8",
+    storageBucket: "bikeroom-765b8.appspot.com",
+    messagingSenderId: "505548164349",
+    appId: "1:505548164349:web:6f1111e3b71f5643ca0294"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// 🔹 GET bikeId FROM URL
+const urlParams = new URLSearchParams(window.location.search);
+const bikeId = urlParams.get("bikeId");
+const bikeNameInput = document.getElementById("bikeName");
+
+// 🔹 Load Bike Name
+if(bikeId){
+    db.collection("latestBike").doc(bikeId).get().then(doc => {
+        if(doc.exists){
+            bikeNameInput.value = doc.data().name;
+        } else {
+            bikeNameInput.value = "Bike Not Found";
+        }
+    });
+}
+
+// 🔹 Book Test Ride
+document.getElementById("bookBtn").addEventListener("click", () => {
+    const data = {
+        bikeId: bikeId || "",
+        bikeName: bikeNameInput.value,
+        userName: document.getElementById("userName").value,
+        userEmail: document.getElementById("userEmail").value,
+        userPhone: document.getElementById("userPhone").value,
+        rideDate: document.getElementById("rideDate").value,
+        rideTime: document.getElementById("rideTime").value,
+        location: document.getElementById("location").value,
+        createdAt: new Date()
+    };
+
+    if(!data.userName || !data.userEmail || !data.userPhone || !data.rideDate || !data.rideTime || !data.location){
+        return alert("Please fill all fields ❌");
+    }
+
+    db.collection("testRides").add(data)
+    .then(() => {
+        alert("Test Ride Booked ✅");
+        document.getElementById("userName").value = "";
+        document.getElementById("userEmail").value = "";
+        document.getElementById("userPhone").value = "";
+        document.getElementById("rideDate").value = "";
+        document.getElementById("rideTime").value = "";
+        document.getElementById("location").value = "";
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Error booking ride ❌");
+    });
+});
+</script>
+
+</body>
+</html>

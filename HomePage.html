@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoDrive - Vehicle Management System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* Global Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Navbar Animation */
+        .navbar {
+            background-color: #ffffff;
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: #1a73e8;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .logo img {
+            width: 32px;
+            height: 32px;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #2563eb;
+            cursor: pointer;
+            padding: 0.5rem;
+            width: auto;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #5f6368;
+            font-weight: 500;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #1a73e8;
+            background-color: rgba(26, 115, 232, 0.1);
+        }
+
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .login-btn {
+            color: #1a73e8;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background-color: rgba(26, 115, 232, 0.1);
+        }
+
+        .register-btn {
+            background-color: #1a73e8;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 24px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .register-btn:hover {
+            background-color: #1557b0;
+        }
+
+        .profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1a73e8;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            background-color: #ffffff;
+            margin-left: 1rem;
+        }
+
+        .profile-btn:hover {
+            background-color: rgba(26, 115, 232, 0.1);
+        }
+
+        .profile-btn i {
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                width: 100%;
+                background-color: #ffffff;
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 0;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+                z-index: 9999;
+                border-top: 2px solid #2563eb;
+            }
+
+            .nav-links.active {
+                display: flex !important;
+            }
+
+            .auth-buttons {
+                display: none;
+            }
+
+            .nav-links li {
+                width: 100%;
+                list-style: none;
+            }
+            
+            .nav-links a {
+                display: block;
+                width: 100%;
+                text-align: center;
+                padding: 15px;
+                border-bottom: 1px solid #e2e8f0;
+                color: #1e293b;
+                font-size: 1.1rem;
+                font-weight: 500;
+                text-decoration: none;
+            }
+            
+            .nav-links a:hover {
+                background-color: #f1f5f9;
+                color: #2563eb;
+            }
+            
+            .nav-links li:last-child a {
+                border-bottom: none;
+            }
+        }
+
+        /* Hero Section Animation */
+        .hero {
+            position: relative;
+            overflow: hidden;
+            background: url('homepageimg/background.jpg') no-repeat center center;
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.5) 100%);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            animation: fadeIn 1s ease-out;
+            color: white;
+            max-width: 800px;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(5, 9, 119, 0.3);
+            color: rgb(176, 77, 77);
+        }
+
+        .hero-content p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            color: rgb(77, 154, 176);
+
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cta-button:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .hero-3d {
+            position: relative;
+            z-index: 2;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* About Section Animation */
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .about-text {
+            animation: slideInLeft 1s ease-out;
+        }
+
+        .about-stats {
+            animation: slideInRight 1s ease-out;
+        }
+
+        .stat {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Services Section Animation */
+        .service-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #007bff, #00bcd4);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        .service-card:hover::before {
+            opacity: 0.1;
+        }
+
+        .service-card>* {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Team Section Animation */
+        .team-member {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-member::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background: linear-gradient(to top, rgba(0, 123, 255, 0.8), transparent);
+            transition: height 0.3s ease;
+        }
+
+        .team-member:hover::after {
+            height: 100%;
+        }
+
+        .team-member .social-links {
+            position: absolute;
+            bottom: -50px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            transition: all 0.3s ease;
+            z-index: 3;
+        }
+
+        .team-member:hover .social-links {
+            bottom: 20px;
+        }
+
+        /* Blog Section Animation */
+        .blog-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .blog-card img {
+            transition: transform 0.3s ease;
+        }
+
+        .blog-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .blog-content {
+            position: relative;
+            z-index: 2;
+            background: white;
+            padding: 20px;
+        }
+
+        /* Footer Animation */
+        .social-links a {
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            transform: translateY(-5px);
+            color: #007bff;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .about-content {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-content {
+                text-align: center;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 80px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 80px);
+                background: white;
+                flex-direction: column;
+                transition: all 0.3s ease;
+            }
+
+            .nav-links.active {
+                left: 0;
+            }
+        }
+
+        /* Vehicles Section Styles */
+        .vehicles {
+            padding: 5rem 2rem;
+            background: #f8f9fa;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .bike-filters {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 1rem 2rem;
+            border: none;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: rgb(255, 255, 255);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+        }
+
+        .filter-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .filter-btn:hover::before {
+            left: 100%;
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+            transform: translateY(-2px);
+            
+        }
+
+        .bikes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .bike-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .bike-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .bike-image {
+            height: 250px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bike-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .bike-card:hover .bike-image img {
+            transform: scale(1.1);
+        }
+
+        .bike-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #007bff;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .bike-info {
+            padding: 1.5rem;
+        }
+
+        .bike-info h3 {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .bike-specs {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            color: #666;
+        }
+
+        .bike-specs span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .bike-specs i {
+            color: #007bff;
+        }
+
+        .bike-price {
+            color: #007bff;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .bike-features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+            padding: 0;
+        }
+
+        .bike-features li {
+            margin-bottom: 0.5rem;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .bike-features i {
+            color: #28a745;
+        }
+
+        .bike-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .view-details {
+            flex: 1;
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .book-test-ride {
+            flex: 1;
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .view-details:hover,
+        .book-test-ride:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .bike-filters {
+                flex-wrap: wrap;
+            }
+
+            .filter-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .bikes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bike-image {
+                height: 200px;
+            }
+
+            .bike-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Services Section Styles */
+        .services {
+            padding: 5rem 2rem;
+            background: #f8f9fa;
+        }
+
+        .services-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .services-header h2 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #007bff, #00bcd4);
+            transition: height 0.3s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .service-card:hover::before {
+            height: 8px;
+        }
+
+        .service-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #007bff, #00bcd4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: white;
+            font-size: 1.8rem;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        }
+
+        .service-content h3 {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .service-content p {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .service-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .service-features li {
+            margin-bottom: 0.8rem;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .service-features li i {
+            color: #28a745;
+            font-size: 1.1rem;
+        }
+
+        .service-learn-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .service-learn-more:hover {
+            color: #0056b3;
+            gap: 1rem;
+        }
+
+        .service-learn-more i {
+            transition: transform 0.3s ease;
+        }
+
+        .service-learn-more:hover i {
+            transform: translateX(5px);
+        }
+
+        @media (max-width: 768px) {
+            .services {
+                padding: 3rem 1rem;
+            }
+
+            .services-header h2 {
+                font-size: 2rem;
+            }
+
+            .service-card {
+                padding: 1.5rem;
+            }
+
+            .service-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+        }
+
+        body {
+            margin-top: 80px;
+        }
+
+        .bike-specs {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            flex-wrap: nowrap;
+            /* 🔥 IMPORTANT */
+        }
+
+        .bike-specs span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 10px;
+            border-radius: 8px;
+            white-space: nowrap;
+            /* 🔥 text break होणार नाही */
+        }
+
+        .bike-specs i {
+            color: #22c55e;
+        }
+       .blog-content p {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;   /* Chrome, Edge, Safari */
+    line-clamp: 2;           /* ✅ Standard property */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+        /* ─── OFFERS SECTIONS ─────────────────────────── */
+        .offers-section {
+            padding: 5rem 2rem;
+        }
+        .electric-section { background: linear-gradient(160deg, #ecfdf5 0%, #f0fdf4 60%, #dcfce7 100%); }
+        .premium-section  { background: linear-gradient(160deg, #fffbeb 0%, #fef9c3 60%, #fde68a 100%); }
+        .special-section  { background: linear-gradient(160deg, #fff1f2 0%, #ffe4e6 60%, #fecdd3 100%); }
+        .all-offers-section { background: linear-gradient(160deg, #f0f9ff 0%, #e0f2fe 60%, #bae6fd 100%); }
+
+        .offers-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .offers-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin: 0.6rem 0;
+            letter-spacing: -0.5px;
+        }
+        .offers-header p {
+            color: #475569;
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+        .offers-tag {
+            display: inline-block;
+            padding: 0.45rem 1.3rem;
+            background: #16a34a;
+            color: white;
+            border-radius: 20px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 0.85rem;
+        }
+        .offers-tag.premium-tag { background: #d97706; }
+        .offers-tag.special-tag { background: #dc2626; }
+        .offers-tag.all-tag { background: linear-gradient(135deg, #2563eb, #7c3aed); font-size: 1.1rem; padding: 0.5rem 1.5rem; }
+
+        .offers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.8rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .offers-loading, .offers-empty {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 3rem;
+            color: #94a3b8;
+        }
+        .offers-empty i { font-size: 2.5rem; display: block; margin-bottom: 1rem; }
+
+        .offer-card {
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+            transition: transform 0.28s, box-shadow 0.28s;
+            display: flex;
+            flex-direction: column;
+        }
+        .offer-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 36px rgba(0,0,0,0.13);
+        }
+        .offer-card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: #f1f5f9;
+        }
+        .offer-card-body {
+            padding: 1.4rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .offer-card-badge {
+            display: inline-block;
+            padding: 0.3rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+        .badge-electric { background: #dcfce7; color: #15803d; }
+        .badge-premium  { background: #fef3c7; color: #b45309; }
+        .badge-offer    { background: #fee2e2; color: #b91c1c; }
+
+        .offer-card-name {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+        .offer-card-desc {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 0.8rem;
+            flex: 1;
+        }
+        .offer-card-specs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 1rem;
+        }
+        .offer-card-specs span {
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 0.78rem;
+            padding: 0.3rem 0.7rem;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        .offer-card-price {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 0.5rem;
+        }
+        .offer-card-price .price-now {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #2563eb;
+        }
+        .offer-card-price .price-old {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            text-decoration: line-through;
+        }
+        .offer-card-price .discount-badge {
+            background: #dc2626;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+        }
+        .offer-card-valid {
+            font-size: 0.78rem;
+            color: #f59e0b;
+            margin-bottom: 1rem;
+        }
+        .offer-card-btn {
+            display: block;
+            text-align: center;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: opacity 0.2s;
+        }
+        .offer-card-btn:hover { opacity: 0.88; }
+        /* Electric btn */
+        .electric-section .offer-card-btn { background: linear-gradient(135deg, #16a34a, #15803d); }
+        /* Premium btn */
+        .premium-section  .offer-card-btn { background: linear-gradient(135deg, #d97706, #b45309); }
+        /* Special btn */
+        .special-section  .offer-card-btn { background: linear-gradient(135deg, #dc2626, #b91c1c); }
+
+        @media (max-width: 768px) {
+            .offers-section { padding: 3rem 1rem; }
+            .offers-header h2 { font-size: 1.6rem; }
+            .offers-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="HomePage.html" class="logo">
+                <img src="https://img.icons8.com/fluency/48/motorcycle.png" alt="AutoDrive Logo">
+                AutoDrive
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="HomePage.html" class="active">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="service.html">Services</a></li>
+                <li><a href="bikesPAge.html">Bikes</a></li>
+                <li><a href="team.html">Team</a></li>
+            </ul>
+            <div class="auth-buttons">
+                <a href="cart.html" class="cart-btn" style="color: #2563eb; font-size: 1.3rem; margin-right: 1rem;">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
+                <a href="profile1.html" id="profileBtn" class="profile-btn" style="color: #2563eb; font-size: 1.3rem;">
+                    <i class="fas fa-user"></i>
+                </a>
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Welcome to AutoDrive</h1>
+            <p>Your Ultimate Vehicle Management Solution</p>
+            <a href="bikesPAge.html" class="cta-button">Explore Vehicles</a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <h2>About Us</h2>
+        <div class="about-content">
+            <div class="about-text">
+                <p>AutoDrive is a comprehensive vehicle management system designed to revolutionize how you handle your
+                    fleet. Our platform offers cutting-edge solutions for vehicle tracking, maintenance, and management.
+                </p>
+                <p>With over a decade of experience in the automotive industry, we've developed a system that combines
+                    advanced technology with user-friendly interfaces to provide the best vehicle management experience.
+                </p>
+            </div>
+            <div class="about-stats">
+                <div class="stat">
+                    <h3>1000+</h3>
+                    <p>Vehicles Managed</p>
+                </div>
+                <div class="stat">
+                    <h3>500+</h3>
+                    <p>Happy Clients</p>
+                </div>
+                <div class="stat">
+                    <h3>50+</h3>
+                    <p>Team Members</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="services-header">
+            <h2>Our Services</h2>
+            <p class="section-subtitle">Discover our comprehensive range of vehicle management solutions</p>
+        </div>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-car"></i>
+                </div>
+                <div class="service-content">
+                    <h3>Vehicle Tracking</h3>
+                    <p>Real-time GPS tracking and monitoring with advanced analytics</p>
+                    <ul class="service-features">
+                        <li><i class="fas fa-check-circle"></i> Live Location Tracking</li>
+                        <li><i class="fas fa-check-circle"></i> Route Optimization</li>
+                        <li><i class="fas fa-check-circle"></i> Geofencing Alerts</li>
+                    </ul>
+                    <a href="service.html" class="service-learn-more">
+                        Learn More
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-wrench"></i>
+                </div>
+                <div class="service-content">
+                    <h3>Maintenance</h3>
+                    <p>Scheduled maintenance and automated alerts for optimal performance</p>
+                    <ul class="service-features">
+                        <li><i class="fas fa-check-circle"></i> Automated Scheduling</li>
+                        <li><i class="fas fa-check-circle"></i> Service History</li>
+                        <li><i class="fas fa-check-circle"></i> Cost Tracking</li>
+                    </ul>
+                    <a href="service.html" class="service-learn-more">
+                        Learn More
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">
+
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="service-content">
+                    <h3>Analytics</h3>
+                    <p>Detailed performance reports and predictive maintenance insights</p>
+                    <ul class="service-features">
+                        <li><i class="fas fa-check-circle"></i> Performance Metrics</li>
+                        <li><i class="fas fa-check-circle"></i> Fuel Efficiency</li>
+                        <li><i class="fas fa-check-circle"></i> Cost Analysis</li>
+                    </ul>
+                    <a href="service.html" class="service-learn-more">
+                        Learn More
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="service-content">
+                    <h3>Security</h3>
+                    <p>Advanced security features and real-time monitoring</p>
+                    <ul class="service-features">
+                        <li><i class="fas fa-check-circle"></i> Anti-Theft Alerts</li>
+                        <li><i class="fas fa-check-circle"></i> Driver Behavior</li>
+                        <li><i class="fas fa-check-circle"></i> Emergency Response</li>
+                    </ul>
+                    <a href="service.html" class="service-learn-more">
+                        Learn More
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vehicles Section -->
+    <section id="vehicles" class="vehicles">
+        <div class="section-header">
+            <h1> Premium Bikes</h1>
+            <p class="section-subtitle">Discover our collection of high-performance motorcycles</p>
+        </div>
+
+        <div class="bike-filters">
+            <a href="bikesPAge.html" class="filter-btn active">All Bikes</a>
+     
+        </div>
+
+        <div class="bikes-grid" id="bikesContainer"></div>
+    </section>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAhWXQg6VYvz8JcrPu42Y__oGkARfi0x1U",
+            authDomain: "bikeroom-765b8.firebaseapp.com",
+            projectId: "bikeroom-765b8",
+            storageBucket: "bikeroom-765b8.appspot.com",
+            messagingSenderId: "505548164349",
+            appId: "1:505548164349:web:6f1111e3b71f5643ca0294"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function loadBikes() {
+            const container = document.getElementById("bikesContainer");
+            container.innerHTML = "<p>Loading bikes...</p>";
+
+            try {
+                const q = query(collection(db, "latestBike"), orderBy("createdAt", "desc"));
+                const snapshot = await getDocs(q);
+                container.innerHTML = "";
+
+                if (snapshot.empty) {
+                    container.innerHTML = "<p>No bikes found ❌</p>";
+                    return;
+                }
+
+                snapshot.forEach(doc => {
+                    const bike = doc.data();
+                    const id = doc.id;
+
+                    container.innerHTML += `
+      <div class="bike-card">
+        <div class="bike-image">
+          <img src="${bike.image}" alt="${bike.name}">
+          ${bike.badge ? `<div class="bike-badge">${bike.badge}</div>` : ""}
+        </div>
+        <div class="bike-info">
+          <h3>${bike.name}</h3>
+          <div class="bike-specs">
+            ${bike.cc ? `<span><i class="fas fa-tachometer-alt"></i> ${bike.cc}</span>` : ""}
+            ${bike.hp ? `<span><i class="fas fa-bolt"></i> ${bike.hp} HP</span>` : ""}
+            ${bike.weight ? `<span><i class="fas fa-weight"></i> ${bike.weight}</span>` : ""}
+          </div>
+          ${bike.price ? `<p class="bike-price">₹${bike.price}</p>` : ""}
+          ${bike.features ? `<ul class="bike-features">${bike.features.map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('')}</ul>` : ""}
+          <div class="bike-actions">
+            <a href="latestBikeDetails.html?id=${id}" class="view-details">View Details</a>
+            ${bike.testRideLink ? `<a href="${bike.testRideLink}" class="book-test-ride">Book Test Ride</a>` : ""}
+          </div>
+        </div>
+      </div>`;
+                });
+
+            } catch (error) {
+                console.error(error);
+                container.innerHTML = "<p>Error loading bikes ❌</p>";
+            }
+        }
+
+        loadBikes();
+    </script>
+    <!-- Team Section -->
+    <section id="team" class="team">
+        <h2>Our Team</h2>
+        <div class="team-grid">
+            <div class="team-member">
+                <img src="teamMem/ryan max.jpg" alt="Team Member">
+                <h3>John Doe</h3>
+                <p>CEO</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="team-member">
+                <img src="teamMem/lauren simpson.jpg" alt="Team Member">
+                <h3>Jane Smith</h3>
+                <p>CTO</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="team-member">
+                <img src="teamMem/kathryn holland.jpg" alt="Team Member">
+                <h3>Mike Johnson</h3>
+                <p>Operations Manager</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Clients Section -->
+    <section id="clients" class="clients">
+        <h2>Our Clients</h2>
+        <div class="clients-grid">
+            <img src="imag/client1.png" alt="Client Logo">
+            <img src="imag/client2.png" alt="Client Logo">
+            <img src="imag/client3.png" alt="Client Logo">
+            <img src="imag/client4.png" alt="Client Logo">
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <!-- Blog Form -->
+
+
+    <!-- 🎉 All Offers Section -->
+    <section id="all-offers" class="offers-section all-offers-section">
+        <div class="offers-header">
+            <h1>Latest Bike Offers</h1>
+            <div class="offers-tag all-tag">🎉 Exclusive Deals</div>
+            <p>Handpicked deals on electric, premium &amp; special bikes — updated by our team</p>
+        </div>
+        <div class="offers-grid" id="allOffersGrid">
+            <div class="offers-loading"><i class="fas fa-spinner fa-spin"></i> Loading offers...</div>
+        </div>
+        <div class="offers-empty" id="allOffersEmpty" style="display:none">
+            <i class="fas fa-tags"></i>
+            <p>No offers at the moment. Check back soon!</p>
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section id="blog" class="blog">
+        <h2>Latest News</h2>
+        <div class="blog-grid" id="blogGrid">
+            <!-- Blogs will be loaded dynamically here -->
+        </div>
+    </section>
+ <script type="module">
+import { collection, getDocs, getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
+const dtb = getFirestore(getApp());
+
+const blogGrid = document.getElementById("blogGrid");
+
+// 🔥 save blog for fast next page
+window.saveBlog = function(blog) {
+    localStorage.setItem("selectedBlog", JSON.stringify(blog));
+};
+
+async function loadBlogs() {
+    blogGrid.innerHTML = "<p>Loading blogs...</p>";
+
+    try {
+        console.log("Fetching blogs...");
+        const snapshot = await getDocs(collection(dtb, "blogs"));
+        console.log("Docs count:", snapshot.size);
+
+        blogGrid.innerHTML = "";
+
+        if (snapshot.empty) {
+            blogGrid.innerHTML = "<p>No blogs available ❌</p>";
+            return;
+        }
+
+        snapshot.forEach(docSnap => {
+            const blog = docSnap.data();
+            const blogId = docSnap.id;
+
+            const blogCard = document.createElement("div");
+            blogCard.classList.add("blog-card");
+
+            blogCard.innerHTML = `
+                <img src="${blog.imageUrl}" alt="${blog.title}" loading="lazy">
+                <div class="blog-content">
+                    <h3>${blog.title}</h3>
+                    <p class="desc">${blog.description}</p>
+                    
+                    <a href="blogreadmorepage.html?id=${blogId}" 
+                       onclick='saveBlog(${JSON.stringify(blog)})'
+                       class="read-more">Read More</a>
+                </div>
+            `;
+
+            blogGrid.appendChild(blogCard);
+        });
+
+    } catch (error) {
+        console.error("Blog Error:", error);
+        blogGrid.innerHTML = "<p>Error loading blogs ❌</p>";
+    }
+}
+
+loadBlogs();
+</script>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>AutoDrive</h3>
+                <p>Your trusted partner in vehicle management</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#vehicles">Vehicles</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@autodrive.com</p>
+                <p>Phone: +1 234 567 890</p>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 AutoDrive. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <script>
+        // Navbar Scroll Effect
+        window.addEventListener('scroll', function () {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile Menu Toggle
+        const burger = document.querySelector('.burger');
+        const nav = document.querySelector('.nav-links');
+
+        burger.addEventListener('click', () => {
+            nav.classList.toggle('active');
+            burger.classList.toggle('toggle');
+        });
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Intersection Observer for Animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all sections
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Parallax Effect
+        window.addEventListener('scroll', function () {
+            const scrolled = window.pageYOffset;
+            const parallaxElements = document.querySelectorAll('.parallax');
+
+            parallaxElements.forEach(element => {
+                const speed = element.dataset.speed;
+                element.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const userProfile = document.getElementById('user-profile');
+            const authButtons = document.querySelector('.auth-buttons');
+            const usernameDisplay = document.getElementById('username-display');
+            const logoutBtn = document.getElementById('logout-btn');
+
+            const user = JSON.parse(localStorage.getItem('user'));
+
+            if (user && user.isLoggedIn) {
+                // User is logged in
+                authButtons.classList.add('hidden');
+                userProfile.classList.remove('hidden');
+                userProfile.style.display = 'flex';
+                userProfile.style.alignItems = 'center';
+                usernameDisplay.textContent = user.customerName;
+
+                logoutBtn.addEventListener('click', () => {
+                    localStorage.removeItem('user');
+                    window.location.reload(); // Reload to update UI
+                });
+            } else {
+                // User is not logged in
+                authButtons.classList.remove('hidden');
+                userProfile.classList.add('hidden');
+            }
+        });
+
+        function updateNavAuthButtons() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            const profileBtn = document.getElementById('profileBtn');
+            const profileUserName = document.getElementById('profileUserName');
+            const loginBtn = document.querySelector('.login-btn');
+            const registerBtn = document.querySelector('.register-btn');
+            if (isLoggedIn) {
+                // Show user name in nav
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (currentUser && currentUser.customerName) {
+                    profileUserName.textContent = currentUser.customerName;
+                } else {
+                    profileUserName.textContent = 'Profile';
+                }
+                profileBtn.classList.remove('hidden');
+                loginBtn.classList.add('hidden');
+                registerBtn.classList.add('hidden');
+            } else {
+                profileBtn.classList.add('hidden');
+                loginBtn.classList.remove('hidden');
+                registerBtn.classList.remove('hidden');
+            }
+        }
+        document.addEventListener('DOMContentLoaded', updateNavAuthButtons);
+
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            const menuBtn = document.getElementById('mobileMenuBtn');
+            navLinks.classList.toggle('active');
+            
+            // Toggle icon between bars and times
+            const icon = menuBtn.querySelector('i');
+            if (navLinks.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        }
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                const navLinks = document.getElementById('navLinks');
+                const menuBtn = document.getElementById('mobileMenuBtn');
+                navLinks.classList.remove('active');
+                const icon = menuBtn.querySelector('i');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            });
+        });
+    </script>
+
+    <!-- ⚡ Load Bike Offers from Firebase -->
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, onSnapshot, orderBy, query }
+        from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const offersFirebaseConfig = {
+        apiKey: "AIzaSyAhWXQg6VYvz8JcrPu42Y__oGkARfi0x1U",
+        authDomain: "bikeroom-765b8.firebaseapp.com",
+        projectId: "bikeroom-765b8",
+        appId: "1:505548164349:web:6f1111e3b71f5643ca0294"
+    };
+
+    const offersApp = initializeApp(offersFirebaseConfig, 'offersApp');
+    const offersDb = getFirestore(offersApp);
+
+    function buildOfferCard(offer) {
+        const priceHTML = offer.offerPrice
+            ? `<span class="price-now">₹${Number(offer.offerPrice).toLocaleString('en-IN')}</span>
+               <span class="price-old">₹${Number(offer.originalPrice).toLocaleString('en-IN')}</span>
+               ${offer.discount ? `<span class="discount-badge">${offer.discount}% OFF</span>` : ''}`
+            : `<span class="price-now">₹${Number(offer.originalPrice).toLocaleString('en-IN')}</span>`;
+
+        const specsHTML = offer.specs
+            ? offer.specs.split(',').map(s => `<span>${s.trim()}</span>`).join('')
+            : '';
+
+        const cat = offer.category;
+        const catLabel = cat === 'electric' ? '⚡ Electric'
+                       : cat === 'premium'  ? '👑 Premium 5L+'
+                       : '🔥 Special Offer';
+        const catClass = `badge-${cat}`;
+
+        return `
+        <div class="offer-card">
+            <img class="offer-card-img"
+                 src="${offer.imageUrl || ''}"
+                 onerror="this.src='https://via.placeholder.com/400x200?text=${encodeURIComponent(offer.name)}'"
+                 alt="${offer.name}">
+            <div class="offer-card-body">
+                <span class="offer-card-badge ${catClass}">${catLabel}</span>
+                <div class="offer-card-name">${offer.name}</div>
+                ${offer.description ? `<div class="offer-card-desc">${offer.description}</div>` : ''}
+                ${specsHTML ? `<div class="offer-card-specs">${specsHTML}</div>` : ''}
+                <div class="offer-card-price">${priceHTML}</div>
+                ${offer.validTill ? `<div class="offer-card-valid"><i class="fas fa-clock"></i> Valid till: ${offer.validTill}</div>` : ''}
+                <a href="bikesPAge.html" class="offer-card-btn">View Details &rarr;</a>
+            </div>
+        </div>`;
+    }
+
+    // REAL-TIME: updates instantly when admin adds/deletes offers
+    onSnapshot(query(collection(offersDb, 'bikeOffers'), orderBy('createdAt', 'desc')), (snap) => {
+        const allOffers = [];
+        snap.forEach(d => allOffers.push({ id: d.id, ...d.data() }));
+
+        const grid = document.getElementById('allOffersGrid');
+        if (allOffers.length) {
+            grid.innerHTML = allOffers.map(buildOfferCard).join('');
+            grid.style.display = '';
+            document.getElementById('allOffersEmpty').style.display = 'none';
+        } else {
+            grid.style.display = 'none';
+            document.getElementById('allOffersEmpty').style.display = 'block';
+        }
+    }, (e) => {
+        console.error('Offers real-time error:', e);
+        document.getElementById('allOffersGrid').innerHTML =
+            `<p style="color:#ef4444;text-align:center;grid-column:1/-1">Could not load offers.</p>`;
+    });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bike Details</title>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #1e3a8a, #2563eb, #60a5fa);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 20px;
+      width: 95%;
+      max-width: 400px;
+      color: white;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {opacity:0; transform: translateY(20px);}
+      to {opacity:1; transform: translateY(0);}
+    }
+
+    .card img {
+      width: 100%;
+      border-radius: 15px;
+      margin-bottom: 15px;
+      object-fit: cover;
+      max-height: 200px;
+    }
+
+    .card h3 {
+      text-align: center;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      font-size: 13px;
+    }
+
+    ul li {
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+    }
+
+    ul li i {
+      color: #22c55e;
+      margin-right: 8px;
+    }
+
+    .section-title {
+      margin-top: 10px;
+      font-weight: bold;
+      border-bottom: 1px solid rgba(255,255,255,0.4);
+      padding-bottom: 5px;
+      margin-bottom: 8px;
+    }
+
+    .price {
+      color: #facc15;
+      font-weight: bold;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: 0.3s;
+    }
+
+    .button i {
+      margin-right: 5px;
+    }
+
+    .add-cart {
+      background: linear-gradient(45deg, #22c55e, #16a34a);
+      color: white;
+    }
+
+    .add-cart:hover {
+      transform: scale(1.05);
+    }
+
+    .buy-now {
+      background: linear-gradient(45deg, #f97316, #ea580c);
+      color: white;
+    }
+
+    .buy-now:hover {
+      transform: scale(1.05);
+    }
+
+    .top-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(30, 58, 138, 0.95);
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+    }
+    
+    .top-nav .logo {
+      color: white;
+      font-weight: 700;
+      font-size: 1.3rem;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .top-nav .nav-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+    
+    .top-nav .nav-links a {
+      color: rgba(255,255,255,0.9);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.3s;
+    }
+    
+    .top-nav .nav-links a:hover {
+      color: #facc15;
+    }
+    
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+      gap: 8px;
+    }
+
+    .nav-button {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      padding: 8px 10px;
+      border-radius: 8px;
+      color: white;
+      font-size: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .nav-button:hover {
+      background: rgba(255,255,255,0.4);
+    }
+
+    /* 🤖 AI Section Styles */
+    .bike-info-section {
+      background: linear-gradient(135deg, rgba(250, 204, 21, 0.1), rgba(245, 158, 11, 0.1));
+      border: 1px solid rgba(250, 204, 21, 0.3);
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 10px;
+    }
+
+    .bike-details-list {
+      margin-top: 15px;
+    }
+
+    .detail-row {
+      display: flex;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding: 12px 0;
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      flex: 0 0 120px;
+      color: #22d3ee;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .detail-value {
+      flex: 1;
+      color: white;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .detail-value.price {
+      color: #facc15;
+      font-size: 1.1rem;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .info-item {
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    .info-item label {
+      display: block;
+      font-size: 0.75rem;
+      color: #facc15;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-item value {
+      display: block;
+      font-size: 0.95rem;
+      color: white;
+      font-weight: 600;
+    }
+
+    .ai-insights, .ai-recommendations {
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.1), rgba(167, 139, 250, 0.1));
+      border: 1px solid rgba(34, 211, 238, 0.3);
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 10px;
+    }
+
+    .ai-loading {
+      color: #22d3ee;
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9rem;
+    }
+
+    .ai-insight-item {
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-left: 3px solid #22d3ee;
+    }
+
+    .ai-insight-item h4 {
+      color: #22d3ee;
+      margin: 0 0 5px 0;
+      font-size: 0.9rem;
+    }
+
+    .ai-insight-item p {
+      margin: 0;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .ai-recommendation-card {
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 1px solid rgba(167, 139, 250, 0.3);
+    }
+
+    .ai-recommendation-card:hover {
+      background: rgba(255,255,255,0.2);
+      transform: translateX(5px);
+    }
+
+    .ai-recommendation-card img {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+      margin: 0;
+    }
+
+    .ai-recommendation-info {
+      flex: 1;
+    }
+
+    .ai-recommendation-info h4 {
+      margin: 0 0 4px 0;
+      font-size: 0.95rem;
+      color: white;
+    }
+
+    .ai-recommendation-info p {
+      margin: 0;
+      font-size: 0.8rem;
+      color: #a78bfa;
+    }
+
+    .ai-match-score {
+      background: linear-gradient(135deg, #a78bfa, #7c3aed);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+
+    /* AI Chat Widget */
+    .ai-chat-widget {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1001;
+    }
+
+    .ai-chat-button {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #22d3ee, #a78bfa);
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(34, 211, 238, 0.4);
+      transition: all 0.3s;
+    }
+
+    .ai-chat-button:hover {
+      transform: scale(1.1);
+    }
+
+    .ai-chat-panel {
+      position: absolute;
+      bottom: 70px;
+      right: 0;
+      width: 300px;
+      height: 400px;
+      background: rgba(30, 41, 59, 0.98);
+      border-radius: 16px;
+      border: 1px solid rgba(34, 211, 238, 0.3);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    }
+
+    .ai-chat-panel.active {
+      display: flex;
+    }
+
+    .ai-chat-header {
+      background: linear-gradient(135deg, #22d3ee, #a78bfa);
+      padding: 15px;
+      color: white;
+      font-weight: 600;
+    }
+
+    .ai-chat-messages {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+    }
+
+    .ai-chat-input-area {
+      padding: 10px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      gap: 8px;
+    }
+
+    .ai-chat-input {
+      flex: 1;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 8px 15px;
+      color: white;
+      font-size: 0.9rem;
+    }
+
+    .ai-chat-input::placeholder {
+      color: rgba(255,255,255,0.5);
+    }
+
+    .ai-chat-send {
+      background: linear-gradient(135deg, #22d3ee, #a78bfa);
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .ai-message {
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      max-width: 80%;
+    }
+
+    .ai-message.user {
+      background: rgba(34, 211, 238, 0.2);
+      margin-left: auto;
+      border-bottom-right-radius: 4px;
+    }
+
+    .ai-message.bot {
+      background: rgba(167, 139, 250, 0.2);
+      border-bottom-left-radius: 4px;
+    }
+
+    /* 📱 Mobile Optimization */
+    @media (max-width: 400px) {
+      .card {
+        padding: 15px;
+      }
+
+      .card h3 {
+        font-size: 18px;
+      }
+
+      ul {
+        font-size: 12px;
+      }
+    }
+
+    /* 🔥 IMAGE ZOOM MODAL */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  padding-top: 50px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.9);
+}
+
+.modal-content {
+  display: block;
+  margin: auto;
+  max-width: 90%;
+  max-height: 80%;
+  border-radius: 10px;
+  animation: zoomIn 0.3s ease;
+}
+
+@keyframes zoomIn {
+  from {transform: scale(0.7);}
+  to {transform: scale(1);}
+}
+
+.close {
+  position: absolute;
+  top: 15px;
+  right: 25px;
+  color: white;
+  font-size: 30px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* hover effect */
+.card img {
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.card img:hover {
+  transform: scale(1.05);
+}
+
+  </style>
+</head>
+
+<body>
+
+<!-- Top Navigation -->
+<nav class="top-nav">
+  <a href="HomePage.html" class="logo">
+    <i class="fas fa-motorcycle"></i> SpeedX
+  </a>
+  <div class="nav-links">
+    <a href="HomePage.html">Home</a>
+    <a href="bikesPAge.html">Bikes</a>
+    <a href="cart.html"><i class="fas fa-shopping-cart"></i></a>
+    <a href="profile1.html"><i class="fas fa-user"></i></a>
+  </div>
+</nav>
+
+<div class="card" style="margin-top: 60px;">
+  <img id="bikeImage" src="">
+  <h3 id="bikeName">Loading...</h3>
+
+  <ul id="bikeSpecs"></ul>
+
+  <!-- 📋 Detailed Bike Information -->
+  <div class="bike-details-list" id="bikeDetailsList">
+    <!-- Filled by JavaScript with formatted info -->
+  </div>
+
+  <!-- 📋 Complete Specifications -->
+  <div class="section-title" style="margin-top: 20px; color: #facc15;"><i class="fas fa-clipboard-list"></i> Specifications</div>
+  <div class="bike-info-section" id="completeInfo">
+    <!-- Filled by JavaScript -->
+  </div>
+
+  <!-- 🤖 AI Insights Section -->
+  <div class="section-title" style="margin-top: 20px; color: #22d3ee;"><i class="fas fa-robot"></i> AI Analysis</div>
+  <div id="aiInsights" class="ai-insights">
+    <!-- AI content loads instantly -->
+  </div>
+
+  <!-- 🤖 AI Recommendations -->
+  <div class="section-title" style="margin-top: 20px; color: #a78bfa;"><i class="fas fa-brain"></i> Similar Bikes</div>
+  <div id="aiRecommendations" class="ai-recommendations">
+    <!-- Recommendations load instantly -->
+  </div>
+
+  <div class="button-group">
+    <button class="button add-cart"><i class="fas fa-cart-plus"></i>Add to Cart</button>
+    <button class="button buy-now"><i class="fas fa-bolt"></i>Buy Now</button>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="nav-button" onclick="window.location.href='bikesPAge.html'">← Back to Bikes</button>
+    <button class="nav-button" onclick="window.location.href='cart.html'">🛒 Cart</button>
+    <button class="nav-button" onclick="window.location.href='HomePage.html'">🏠 Home</button>
+  </div>
+</div>
+
+  <!-- 🤖 AI Chat Widget -->
+  <div class="ai-chat-widget">
+    <button class="ai-chat-button" onclick="toggleAIChat()">
+      <i class="fas fa-robot"></i>
+    </button>
+    <div class="ai-chat-panel" id="aiChatPanel">
+      <div class="ai-chat-header">
+        <i class="fas fa-robot"></i> AI Bike Assistant
+      </div>
+      <div class="ai-chat-messages" id="aiChatMessages">
+        <div class="ai-message bot">Hello! I'm your AI bike assistant. Ask me anything about this bike! 🤖</div>
+      </div>
+      <div class="ai-chat-input-area">
+        <input type="text" class="ai-chat-input" id="aiChatInput" placeholder="Ask about this bike..." onkeypress="handleAIChatKeypress(event)">
+        <button class="ai-chat-send" onclick="sendAIMessage()">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔍 IMAGE ZOOM MODAL -->
+<div id="imageModal" class="modal">
+  <span class="close">&times;</span>
+  <img class="modal-content" id="zoomedImg">
+</div>
+
+<!-- 🔥 FIREBASE (LOGIC SAME) -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyAhWXQg6VYvz8JcrPu42Y__oGkARfi0x1U",
+    authDomain: "bikeroom-765b8.firebaseapp.com",
+    projectId: "bikeroom-765b8",
+    storageBucket: "bikeroom-765b8.appspot.com",
+    messagingSenderId: "505548164349",
+    appId: "1:505548164349:web:6f1111e3b71f5643ca0294"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const params = new URLSearchParams(window.location.search);
+const bikeId = params.get("id");
+
+let currentBike = null;
+
+async function loadBike() {
+    const docRef = doc(db, "bikes", bikeId);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+        const bike = docSnap.data();
+        currentBike = bike;
+
+        document.getElementById("bikeImage").src = bike.image;
+        document.getElementById("bikeName").innerText = bike.name;
+
+        document.getElementById("bikeSpecs").innerHTML = `
+            <li><i class="fas fa-check"></i><strong>Model:</strong> ${bike.model}</li>
+            <li><i class="fas fa-check"></i><strong>Company:</strong> ${bike.company}</li>
+            <li><i class="fas fa-check"></i><strong>Engine:</strong> ${bike.engine}</li>
+            <li><i class="fas fa-check"></i><strong>Color:</strong> ${bike.color}</li>
+            <li><i class="fas fa-check"></i><strong>Average:</strong> ${bike.average}</li>
+            <li><i class="fas fa-check"></i><strong>Year:</strong> ${bike.year}</li>
+            <li><i class="fas fa-check"></i><strong>Price:</strong> <span class="price">₹${bike.price}</span></li>
+            <li><i class="fas fa-check"></i><strong>CC:</strong> ${bike.cc}</li>
+        `;
+
+        document.getElementById("bikeInfo").innerHTML = `
+            <li><i class="fas fa-check"></i>${bike.info1}</li>
+            <li><i class="fas fa-check"></i>${bike.info2}</li>
+            <li><i class="fas fa-check"></i>${bike.info3}</li>
+            <li><i class="fas fa-check"></i>${bike.info4}</li>
+        `;
+        
+        // Load AI and additional info immediately
+        if (document.getElementById('bikeDetailsList')) {
+            displayBikeDetailsList(currentBike);
+        }
+        if (document.getElementById('completeInfo')) {
+            displayCompleteInfo(currentBike);
+        }
+        if (document.getElementById('aiInsights')) {
+            const insights = generateAIInsights(currentBike);
+            displayAIInsights(insights);
+        }
+        if (document.getElementById('aiRecommendations')) {
+            loadAIRecommendations(currentBike);
+        }
+    } else {
+        alert("Bike not found ❌");
+    }
+}
+
+loadBike();
+
+// 🔥 ADD TO CART FUNCTIONALITY
+const addCartBtn = document.querySelector('.add-cart');
+
+addCartBtn.addEventListener('click', () => {
+  if (!currentBike) return;
+
+  // Get existing cart items
+  let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+  // Check if already in cart
+  const exists = cartItems.find(item => item.name === currentBike.name);
+  if (exists) {
+    alert("This bike is already in your cart! ✅");
+    // Change button to Go to Cart anyway
+    addCartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Go to Cart';
+    addCartBtn.onclick = () => window.location.href = 'cart.html';
+    return;
+  }
+
+  // Add bike to cart
+  cartItems.push({
+    name: currentBike.name,
+    price: currentBike.price,
+    image: currentBike.image
+  });
+
+  localStorage.setItem('cartItems', JSON.stringify(cartItems));
+
+  // Change button to Go to Cart
+  addCartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Go to Cart';
+  addCartBtn.onclick = () => window.location.href = 'cart.html';
+
+  alert("Bike added to cart successfully! 🛒");
+});
+
+// 🔥 BUY NOW FUNCTIONALITY
+const buyNowBtn = document.querySelector('.buy-now');
+
+buyNowBtn.addEventListener('click', () => {
+  if (!currentBike) return;
+
+  const params = new URLSearchParams({
+    name: currentBike.name,
+    price: currentBike.price,
+    image: currentBike.image
+  });
+
+  // Redirect to buy-now page with bike info
+  window.location.href = `buy-now.html?${params.toString()}`;
+});
+
+// 🔥 IMAGE ZOOM LOGIC
+const modal = document.getElementById("imageModal");
+const img = document.getElementById("bikeImage");
+const modalImg = document.getElementById("zoomedImg");
+const closeBtn = document.querySelector(".close");
+
+img.onclick = function () {
+  modal.style.display = "block";
+  modalImg.src = this.src;
+};
+
+closeBtn.onclick = function () {
+  modal.style.display = "none";
+};
+
+// close when clicking outside image
+modal.onclick = function (e) {
+  if (e.target === modal) {
+    modal.style.display = "none";
+  }
+};
+
+// 🤖 AI FUNCTIONS
+
+// Generate AI Insights based on bike data
+function generateAIInsights(bike) {
+  const insights = [];
+  
+  // Price Analysis
+  const price = parseInt(String(bike.price).replace(/[^0-9]/g, '') || 0);
+  if (price > 0) {
+    if (price < 100000) {
+      insights.push({
+        title: "💰 Value for Money",
+        text: "This bike offers excellent value in the budget segment. Great choice for daily commuting with low maintenance costs."
+      });
+
+
+      
+    } else if (price < 200000) {
+      insights.push({
+        title: "💰 Mid-Range Champion",
+        text: "Positioned perfectly in the mid-range segment, offering premium features without breaking the bank."
+      });
+    } else {
+      insights.push({
+        title: "💰 Premium Segment",
+        text: "A premium offering with top-tier features. Ideal for enthusiasts seeking performance and style."
+      });
+    }
+  }
+  
+  // Engine Analysis
+  const cc = parseInt(bike.cc || 0);
+  if (cc > 0) {
+    if (cc < 150) {
+      insights.push({
+        title: "⚡ Efficiency Focused",
+        text: `The ${cc}cc engine prioritizes fuel efficiency and easy handling. Perfect for city rides and new riders.`
+      });
+    } else if (cc < 250) {
+      insights.push({
+        title: "⚡ Balanced Performance",
+        text: `The ${cc}cc engine strikes a perfect balance between power and efficiency. Suitable for both city and highway rides.`
+      });
+    } else {
+      insights.push({
+        title: "⚡ Power Packed",
+        text: `The ${cc}cc engine delivers thrilling performance. Built for speed enthusiasts and long highway cruises.`
+      });
+    }
+  }
+  
+  // Mileage Analysis
+  if (bike.average) {
+    const mileage = parseFloat(bike.average);
+    if (mileage > 50) {
+      insights.push({
+        title: "⛽ Fuel Efficient",
+        text: `With ${bike.average} mileage, this bike is extremely fuel-efficient. Save significantly on fuel costs!`
+      });
+    }
+  }
+  
+  // Year Analysis
+  const year = parseInt(bike.year);
+  if (year >= 2024) {
+    insights.push({
+      title: "🆕 Latest Model",
+      text: "Being a latest model, you get the most recent technology, safety features, and design language."
+    });
+  }
+  
+  // Use Case
+  insights.push({
+    title: "🎯 Best For",
+    text: generateBestForText(bike)
+  });
+  
+  return insights;
+}
+
+function generateBestForText(bike) {
+  const cc = parseInt(bike.cc || 0);
+  const texts = [];
+  
+  if (cc < 150) {
+    texts.push("daily commuting", "new riders", "fuel economy");
+  } else if (cc < 250) {
+    texts.push("weekend rides", "city-highway mix", "style conscious riders");
+  } else {
+    texts.push("highway cruising", "performance enthusiasts", "long tours");
+  }
+  
+  return texts.join(" • ");
+}
+
+// Display AI Insights
+function displayAIInsights(insights) {
+  const container = document.getElementById('aiInsights');
+  container.innerHTML = insights.map(insight => `
+    <div class="ai-insight-item">
+      <h4>${insight.title}</h4>
+      <p>${insight.text}</p>
+    </div>
+  `).join('');
+}
+
+// 🤖 AI Chat Functions
+function toggleAIChat() {
+  const panel = document.getElementById('aiChatPanel');
+  panel.classList.toggle('active');
+}
+
+function handleAIChatKeypress(event) {
+  if (event.key === 'Enter') {
+    sendAIMessage();
+  }
+}
+
+function sendAIMessage() {
+  const input = document.getElementById('aiChatInput');
+  const message = input.value.trim();
+  
+  if (!message) return;
+  
+  // Add user message instantly
+  addChatMessage(message, 'user');
+  input.value = '';
+  
+  // Generate AI response instantly (no delay)
+  const response = generateAIResponse(message, currentBike);
+  addChatMessage(response, 'bot');
+}
+
+function addChatMessage(text, sender) {
+  const container = document.getElementById('aiChatMessages');
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `ai-message ${sender}`;
+  messageDiv.textContent = text;
+  container.appendChild(messageDiv);
+  container.scrollTop = container.scrollHeight;
+}
+
+function generateAIResponse(query, bike) {
+  query = query.toLowerCase();
+  
+  if (query.includes('price') || query.includes('cost') || query.includes('kitni')) {
+    return `The ${bike.name} is priced at ₹${bike.price}. This is ${getPriceOpinion(bike.price)} for a bike with these features.`;
+  }
+  
+  if (query.includes('mileage') || query.includes('average') || query.includes('kitna deti')) {
+    return `The ${bike.name} delivers approximately ${bike.average}. This makes it ${getMileageOpinion(bike.average)}.`;
+  }
+  
+  if (query.includes('engine') || query.includes('cc') || query.includes('power')) {
+    return `The ${bike.name} comes with a ${bike.cc}cc ${bike.engine} engine. It offers ${getEngineOpinion(bike.cc)}.`;
+  }
+  
+  if (query.includes('color') || query.includes('colour')) {
+    return `The ${bike.name} is available in ${bike.color}. It's a popular choice among buyers!`;
+  }
+  
+  if (query.includes('compare') || query.includes('better')) {
+    return `The ${bike.name} stands out with its ${bike.cc}cc engine and ${bike.average} mileage. It's best suited for ${getBestFor(bike)}.`;
+  }
+  
+  if (query.includes('buy') || query.includes('purchase') || query.includes('leni')) {
+    return `The ${bike.name} is an excellent choice! With its ${bike.cc}cc engine and ₹${bike.price} price point, it offers great value. Would you like to add it to cart?`;
+  }
+  
+  if (query.includes('feature') || query.includes('spec')) {
+    return `Key features of ${bike.name}: ${bike.cc}cc engine, ${bike.average} mileage, ${bike.color} color, ${bike.year} model. ${bike.info1}`;
+  }
+  
+  if (query.includes('hello') || query.includes('hi') || query.includes('namaste')) {
+    return `Hello! I'm here to help you with the ${bike.name}. Ask me about price, mileage, features, or anything else!`;
+  }
+  
+  return `That's an interesting question about the ${bike.name}! Based on its ${bike.cc}cc engine and features, I'd say it's a solid choice for ${getBestFor(bike)}. What specific aspect would you like to know more about?`;
+}
+
+function getPriceOpinion(price) {
+  const p = parseInt(String(price).replace(/[^0-9]/g, '') || 0);
+  if (p < 100000) return "very competitively priced";
+  if (p < 200000) return "reasonably priced";
+  return "a premium offering";
+}
+
+function getMileageOpinion(average) {
+  const m = parseFloat(average);
+  if (m > 50) return "highly fuel efficient";
+  if (m > 40) return "decently fuel efficient";
+  return "average on fuel efficiency";
+}
+
+function getEngineOpinion(cc) {
+  const c = parseInt(cc);
+  if (c < 150) return "smooth and efficient performance for city rides";
+  if (c < 250) return "a perfect balance of power and efficiency";
+  return "thrilling performance for highway cruising";
+}
+
+function getBestFor(bike) {
+  const cc = parseInt(bike.cc || 0);
+  if (cc < 150) return "daily city commuting";
+  if (cc < 250) return "mixed city and highway usage";
+  return "highway touring and performance riding";
+}
+
+// Display Bike Details in List Format
+function displayBikeDetailsList(bike) {
+  const container = document.getElementById('bikeDetailsList');
+  container.innerHTML = `
+    <div class="detail-row">
+      <div class="detail-label">Model:</div>
+      <div class="detail-value">${bike.model || bike.name || 'N/A'}</div>
+    </div>
+    <div class="detail-row">
+      <div class="detail-label">Company:</div>
+      <div class="detail-value">${bike.company || 'N/A'}</div>
+    </div>
+    <div class="detail-row">
+      <div class="detail-label">Engine:</div>
+      <div class="detail-value">${bike.engine || bike.cc + 'cc' || 'N/A'}</div>
+    </div>
+    <div class="detail-row">
+      <div class="detail-label">Color:</div>
+      <div class="detail-value">${bike.color || 'N/A'}</div>
+    </div>
+    <div class="detail-row">
+      <div class="detail-label">Average:</div>
+      <div class="detail-value">${bike.average || 'N/A'} kmpl</div>
+    </div>
+    <div class="detail-row">
+      <div class="detail-label">Year:</div>
+      <div class="detail-value">${bike.year || 'N/A'}</div>
+    </div>
+    <div class="detail-row">
+      <div class="detail-label">Price:</div>
+      <div class="detail-value price">₹${bike.price || 'N/A'}</div>
+    </div>
+    <div class="detail-row">
+      <div class="detail-label">CC:</div>
+      <div class="detail-value">${bike.cc || 'N/A'}</div>
+    </div>
+    <div class="detail-row" style="margin-top: 10px; border-top: 2px solid rgba(34, 211, 238, 0.3); padding-top: 15px;">
+      <div class="detail-label" style="color: #a78bfa;">About:</div>
+      <div class="detail-value" style="font-size: 0.9rem; line-height: 1.6;">
+        ${bike.info1 || 'Advanced commuter bike with smart features.'}<br>
+        ${bike.info2 || 'Includes SmartXonnect for connectivity.'}<br>
+        ${bike.info3 || 'Efficient engine with great fuel economy.'}<br>
+        ${bike.info4 || 'Modern design and ergonomics.'}
+      </div>
+    </div>
+  `;
+}
+
+// Display Complete Bike Information (Grid Format)
+function displayCompleteInfo(bike) {
+  const container = document.getElementById('completeInfo');
+  container.innerHTML = `
+    <div class="info-grid">
+      <div class="info-item">
+        <label>Brand</label>
+        <value>${bike.company || 'N/A'}</value>
+      </div>
+      <div class="info-item">
+        <label>Model</label>
+        <value>${bike.model || 'N/A'}</value>
+      </div>
+      <div class="info-item">
+        <label>Year</label>
+        <value>${bike.year || 'N/A'}</value>
+      </div>
+      <div class="info-item">
+        <label>Engine</label>
+        <value>${bike.cc || 'N/A'} CC</value>
+      </div>
+      <div class="info-item">
+        <label>Color</label>
+        <value>${bike.color || 'N/A'}</value>
+      </div>
+      <div class="info-item">
+        <label>Mileage</label>
+        <value>${bike.average || 'N/A'}</value>
+      </div>
+      <div class="info-item">
+        <label>Price</label>
+        <value style="color: #facc15;">₹${bike.price || 'N/A'}</value>
+      </div>
+      <div class="info-item">
+        <label>Engine Type</label>
+        <value>${bike.engine || 'N/A'}</value>
+      </div>
+    </div>
+  `;
+}
+
+// Load AI Recommendations
+async function loadAIRecommendations(currentBike) {
+  try {
+    const { collection, query, where, getDocs } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    
+    // Get bikes with similar CC range
+    const cc = parseInt(currentBike.cc || 0);
+    const ccMin = cc - 50;
+    const ccMax = cc + 50;
+    
+    const bikesRef = collection(db, 'bikes');
+    const q = query(bikesRef);
+    const snapshot = await getDocs(q);
+    
+    const similarBikes = [];
+    snapshot.forEach(doc => {
+      const bike = doc.data();
+      if (bike.name !== currentBike.name) {
+        const bikeCC = parseInt(bike.cc || 0);
+        const ccDiff = Math.abs(bikeCC - cc);
+        const matchScore = Math.max(0, 100 - ccDiff);
+        
+        if (matchScore > 50) {
+          similarBikes.push({
+            id: doc.id,
+            ...bike,
+            matchScore: matchScore
+          });
+        }
+      }
+    });
+    
+    // Sort by match score and take top 3
+    similarBikes.sort((a, b) => b.matchScore - a.matchScore);
+    const topRecommendations = similarBikes.slice(0, 3);
+    
+    displayAIRecommendations(topRecommendations);
+  } catch (error) {
+    console.error('Error loading AI recommendations:', error);
+    document.getElementById('aiRecommendations').innerHTML = `
+      <div class="ai-insight-item">
+        <p>Unable to load recommendations. Please try again later.</p>
+      </div>
+    `;
+  }
+}
+
+function displayAIRecommendations(bikes) {
+  const container = document.getElementById('aiRecommendations');
+  
+  if (bikes.length === 0) {
+    container.innerHTML = `
+      <div class="ai-insight-item">
+        <p>No similar bikes found. This bike is unique in its category!</p>
+      </div>
+    `;
+    return;
+  }
+  
+  container.innerHTML = bikes.map(bike => `
+    <div class="ai-recommendation-card" onclick="window.location.href='details.html?id=${bike.id}'">
+      <img src="${bike.image}" alt="${bike.name}">
+      <div class="ai-recommendation-info">
+        <h4>${bike.name}</h4>
+        <p>₹${bike.price} • ${bike.cc}cc • ${bike.average}</p>
+      </div>
+      <div class="ai-match-score">${bike.matchScore}% Match</div>
+    </div>
+  `).join('');
+}
+</script>
+
+</body>
+</html>

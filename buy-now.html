@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buy Now</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <style>
+    body {
+      min-height: 100vh;
+      background: linear-gradient(to top right, #1e90ff, #2a7fff, #2f6fff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      font-family: 'Arial', sans-serif;
+    }
+    .container {
+      background-color: #f0f8ff;
+      border-radius: 16px;
+      max-width: 800px;
+      width: 100%;
+      padding: 40px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+    .bike-img {
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      margin: 0 auto 24px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+    }
+    .btn-submit {
+      background-color: #10b981;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      width: 100%;
+    }
+    .btn-submit:hover {
+      background-color: #059669;
+    }
+    .price-tag {
+      color: #ff6600;
+      font-weight: bold;
+      font-size: 1.5rem;
+      margin: 20px 0;
+    }
+    .payment-section {
+      margin: 30px 0;
+      padding: 20px;
+      background-color: #f8fafc;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .payment-options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .payment-option {
+      background-color: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 15px;
+      transition: all 0.3s ease;
+    }
+    
+    .payment-option:hover {
+      border-color: #2563eb;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+    }
+    
+    .payment-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    
+    .payment-label img.payment-icon {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+      border-radius: 6px;
+      background: #f1f5f9;
+      padding: 2px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    }
+    
+    .payment-details {
+      display: none;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #e2e8f0;
+    }
+    
+    .payment-option input[type="radio"]:checked + .payment-label + .payment-details {
+      display: block;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    
+    .form-select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      background-color: white;
+    }
+    
+    .form-select:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+    }
+    .upi-extra {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .upi-qr-section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .upi-qr {
+      width: 120px;
+      height: 120px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      object-fit: contain;
+      transition: width 0.3s, height 0.3s;
+    }
+    .upi-qr-label {
+      font-size: 0.95rem;
+      color: #2563eb;
+      font-weight: 600;
+    }
+    .upi-apps {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .upi-app-logo {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+      border-radius: 6px;
+      background: #f1f5f9;
+      padding: 2px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    }
+    .purchase-summary {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 18px;
+      font-size: 1rem;
+      color: #222;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .purchase-summary .row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .purchase-summary .total {
+      font-weight: bold;
+      color: #1e40af;
+      font-size: 1.1rem;
+    }
+    .qr-label {
+      cursor: pointer;
+      display: inline-block;
+    }
+    .qr-toggle:checked + .qr-label .upi-qr {
+      width: 220px;
+      height: 220px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="text-3xl font-bold text-center mb-6">Complete Your Purchase</h1>
+    
+    <div class="flex flex-col md:flex-row gap-8">
+      <div class="md:w-1/2">
+        <div id="bikeImageContainer">
+        <img id="bikeImage" src="" alt="Bike Image" class="bike-img">
+        </div>
+        <div class="text-center">
+          <h2 id="bikeName" class="text-xl font-semibold mb-2"></h2>
+          <div id="bikePrice" class="price-tag"></div>
+        </div>
+      </div>
+
+      <div class="md:w-1/2">
+        <form id="orderForm">
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="address">Delivery Address</label>
+            <input type="text" id="address" name="address" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="city">City</label>
+            <input type="text" id="city" name="city" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="pincode">PIN Code</label>
+            <input type="text" id="pincode" name="pincode" required>
+          </div>
+
+          <div id="purchaseSummary" class="purchase-summary mb-6"></div>
+
+          <button type="button" class="btn-submit" onclick="startPayment()">
+            <i class="fas fa-money-check-alt mr-2"></i>Proceed to Payment
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="mt-8 text-center">
+      <a href="javascript:history.back()" class="text-blue-600 hover:text-blue-800">
+        <i class="fas fa-arrow-left mr-1"></i>Back to Product
+      </a>
+    </div>
+  </div>
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+ <script>
+function getUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    name: params.get('name') || '',
+    price: params.get('price') || '0',
+    image: params.get('image') || '',
+    company: params.get('company') || '',
+    engine: params.get('engine') || '',
+    color: params.get('color') || ''
+  };
+}
+
+function updateBikeDetails() {
+  const checkoutCart = JSON.parse(localStorage.getItem('checkoutCart'));
+  const bikeImageContainer = document.getElementById('bikeImageContainer');
+  const bikeNameEl = document.getElementById('bikeName');
+  const bikePriceEl = document.getElementById('bikePrice');
+  const purchaseSummary = document.getElementById('purchaseSummary');
+
+  bikeImageContainer.innerHTML = '';
+  bikeImageContainer.style.display = 'flex';
+  bikeImageContainer.style.flexWrap = 'wrap';
+  bikeImageContainer.style.gap = '10px';
+
+  if (checkoutCart && checkoutCart.length > 0) {
+    // Display multiple items from cart
+    let total = 0;
+    let itemNames = [];
+
+    checkoutCart.forEach(item => {
+      total += parseFloat(item.price);
+      itemNames.push(item.name);
+      const img = document.createElement('img');
+      img.src = item.image;
+      img.alt = item.name;
+      img.className = 'bike-img';
+      img.style.width = '120px';
+      img.style.height = '120px';
+      img.style.objectFit = 'cover';
+      bikeImageContainer.appendChild(img);
+    });
+
+    bikeNameEl.textContent = `Your Cart: ${itemNames.join(', ')}`;
+    bikePriceEl.textContent = `₹${total.toLocaleString('en-IN')}`;
+
+    const tax = total * 0.18;
+    const grandTotal = total + tax;
+
+    purchaseSummary.innerHTML = `
+      <div class="row"><span>Base Price:</span><span>₹${total.toLocaleString('en-IN')}</span></div>
+      <div class="row"><span>Tax (18% GST):</span><span>₹${tax.toLocaleString('en-IN', {maximumFractionDigits:2})}</span></div>
+      <div class="row total"><span>Total Amount:</span><span>₹${grandTotal.toLocaleString('en-IN', {maximumFractionDigits:2})}</span></div>
+    `;
+  } else {
+    // Single bike from Buy Now
+    const params = getUrlParams();
+    if(params.image) {
+      const img = document.createElement('img');
+      img.src = params.image;
+      img.alt = params.name;
+      img.className = 'bike-img';
+      bikeImageContainer.appendChild(img);
+    }
+
+    bikeNameEl.textContent = params.name;
+    const price = parseFloat(params.price.replace(/,/g, '') || 0);
+    bikePriceEl.textContent = `₹${price.toLocaleString('en-IN')}`;
+
+    const tax = price * 0.18;
+    const total = price + tax;
+
+    purchaseSummary.innerHTML = `
+      <div class="row"><span>Base Price:</span><span>₹${price.toLocaleString('en-IN')}</span></div>
+      <div class="row"><span>Tax (18% GST):</span><span>₹${tax.toLocaleString('en-IN', {maximumFractionDigits:2})}</span></div>
+      <div class="row total"><span>Total Amount:</span><span>₹${total.toLocaleString('en-IN', {maximumFractionDigits:2})}</span></div>
+    `;
+  }
+}
+
+window.onload = updateBikeDetails;
+
+// Proceed to payment
+function startPayment() {
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
+  const phone = document.getElementById('phone').value;
+  const address = document.getElementById('address').value;
+  const city = document.getElementById('city').value;
+  const pincode = document.getElementById('pincode').value;
+
+  if (!name || !email || !phone || !address || !city || !pincode) {
+    alert('Please fill all details.');
+    return;
+  }
+
+  const userDetails = { name, email, phone, address, city, pincode };
+  localStorage.setItem('userDetails', JSON.stringify(userDetails));
+
+  let checkoutCart = JSON.parse(localStorage.getItem('checkoutCart'));
+  if (!checkoutCart || checkoutCart.length === 0) {
+    const params = getUrlParams();
+    const singleItem = {
+      name: params.name,
+      price: parseFloat(params.price.replace(/,/g, '') || 0),
+      image: params.image
+    };
+    checkoutCart = [singleItem];
+    localStorage.setItem('checkoutCart', JSON.stringify(checkoutCart));
+  }
+
+  window.location.href = 'bpayment.html';
+}
+</script>
+</body>
+</html> 

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(to top right, #1e90ff, #2a7fff, #2f6fff);
+      font-family: 'Arial', sans-serif;
+      padding: 20px;
+    }
+    .container {
+      background: #f0f8ff;
+      padding: 40px;
+      border-radius: 16px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    .btn-pay {
+      background-color: #10b981;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .btn-pay:hover { background-color: #059669; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="text-2xl font-bold mb-6">Complete Your Payment</h1>
+    <p class="mb-6">Click below to pay for your order securely.</p>
+    <button class="btn-pay" id="payBtn">
+      <i class="fas fa-credit-card mr-2"></i>Pay Now
+    </button>
+  </div>
+
+  <!-- Razorpay Checkout -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script>
+    const payBtn = document.getElementById('payBtn');
+
+    payBtn.addEventListener('click', () => {
+      // Get order total from localStorage
+      let total = parseFloat(localStorage.getItem('orderTotal') || '0');
+      if(total <= 0){
+        alert('No order found. Please go back and add items.');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      // Get user details
+      const user = JSON.parse(localStorage.getItem('userDetails') || '{}');
+
+      // Create Razorpay options
+      const options = {
+        key: "rzp_test_ABC123XYZ456", // Replace with your Razorpay Key ID
+        amount: total * 100, // in paise
+        currency: "INR",
+        name: "AutoDrive Bikes",
+        description: "Bike Purchase",
+        prefill: {
+          name: user.name || '',
+          email: user.email || '',
+          contact: user.phone || ''
+        },
+        theme: {
+          color: "#2563eb"
+        },
+        handler: function(response){
+          // After successful payment
+          completeOrder(response.razorpay_payment_id);
+        },
+        modal: {
+          ondismiss: function(){
+            alert("Payment cancelled. You can retry.");
+            window.location.href = 'buynow.html';
+          }
+        }
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+    });
+
+    function completeOrder(paymentId){
+      // Retrieve cart and user info
+      const checkoutCart = JSON.parse(localStorage.getItem('checkoutCart') || '[]');
+      const user = JSON.parse(localStorage.getItem('userDetails') || '{}');
+
+      let subtotal = 0;
+      checkoutCart.forEach(item => subtotal += parseFloat(item.price));
+
+      const tax = subtotal * 0.18;
+      const totalPaid = subtotal + tax;
+
+      const bikeDetails = checkoutCart.length > 1 
+        ? { name: `Your Cart (${checkoutCart.length} items)`, price: subtotal.toString() }
+        : checkoutCart[0];
+
+      // Save order
+      const formData = {
+        fullName: user.name,
+        email: user.email,
+        phone: user.phone,
+        address: user.address,
+        city: user.city,
+        pincode: user.pincode,
+        paymentMethod: 'Razorpay',
+        paymentId: paymentId,
+        bikeDetails: bikeDetails,
+        orderDate: new Date().toISOString(),
+        orderId: 'ORD' + Date.now()
+      };
+
+      const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+      orders.push(formData);
+      localStorage.setItem('orders', JSON.stringify(orders));
+
+      // Clear cart
+      localStorage.removeItem('checkoutCart');
+      localStorage.removeItem('orderTotal');
+
+      // Show confirmation
+      document.body.innerHTML = `
+        <div class="container">
+          <div style="font-size:3rem; color:#10b981; margin-bottom:20px;">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <h2 class="text-2xl font-bold mb-4">Payment Successful!</h2>
+          <p class="mb-4">Thank you, ${user.name}. Your order has been placed.</p>
+          <div style="text-align:left; background:white; padding:20px; border-radius:8px; margin-bottom:20px;">
+            <p><strong>Order ID:</strong> ${formData.orderId}</p>
+            <p><strong>Bike(s):</strong> ${formData.bikeDetails.name}</p>
+            <p><strong>Total Paid:</strong> ₹${totalPaid.toLocaleString('en-IN', {maximumFractionDigits:2})}</p>
+            <p><strong>Payment ID:</strong> ${paymentId}</p>
+            <p><strong>Delivery:</strong> ${user.address}, ${user.city} - ${user.pincode}</p>
+          </div>
+          <a href="index.html" class="btn-pay">Return to Home</a>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>

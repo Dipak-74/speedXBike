@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin - Manage Blogs</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+<style>
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg,#1e3a8a,#2563eb);
+  margin:0;
+  padding:20px;
+  color:white;
+}
+
+.container {
+  max-width:500px;
+  margin:auto;
+  background: rgba(255,255,255,0.1);
+  padding:20px;
+  border-radius:15px;
+  backdrop-filter: blur(10px);
+  margin-bottom:40px;
+}
+
+h2 { text-align:center; margin-bottom:15px; }
+
+input, textarea {
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+  border:none;
+  border-radius:8px;
+}
+
+button {
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:#22c55e;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+button:hover { background:#16a34a; }
+
+.delete-btn { background:#ef4444; }
+
+.progress-bar { width:100%; display:none; margin-bottom:10px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>📝 Add New Blog</h2>
+  <input type="text" id="blogTitle" placeholder="Blog Title" required>
+  <input type="file" id="blogImage" accept="image/*" required>
+  <progress id="blogProgress" value="0" max="100" class="progress-bar"></progress>
+  <textarea id="blogDesc" placeholder="Description" rows="4" required></textarea>
+  <button onclick="addBlog()">Add Blog</button>
+
+  <h2>❌ Delete Blog</h2>
+  <input type="text" id="blogDeleteTitle" placeholder="Enter Blog Title">
+  <button class="delete-btn" onclick="deleteBlog()">Delete Blog</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// 🔑 Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyAhWXQg6VYvz8JcrPu42Y__oGkARfi0x1U",
+  authDomain: "bikeroom-765b8.firebaseapp.com",
+  projectId: "bikeroom-765b8",
+  storageBucket: "bikeroom-765b8.appspot.com",
+  messagingSenderId: "505548164349",
+  appId: "1:505548164349:web:6f1111e3b71f5643ca0294"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// 🔥 CLOUDINARY CONFIG
+const cloudName = "dvxnmsryu";
+const uploadPreset = "bike_upload";
+
+// 🔥 ADD BLOG
+window.addBlog = async () => {
+  const title = document.getElementById("blogTitle").value;
+  const desc = document.getElementById("blogDesc").value;
+  const file = document.getElementById("blogImage").files[0];
+  const progressBar = document.getElementById("blogProgress");
+
+  if (!title || !desc || !file) {
+    alert("Fill all fields & select an image!");
+    return;
+  }
+
+  // Upload Image to Cloudinary
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", uploadPreset);
+
+  progressBar.style.display = "block";
+  progressBar.value = 0;
+
+  try {
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, { method:"POST", body:formData });
+    const data = await res.json();
+
+    if (!data.secure_url) {
+      alert("Image upload failed!");
+      progressBar.style.display = "none";
+      return;
+    }
+
+    await addDoc(collection(db, "blogs"), {
+      title,
+      description: desc,
+      imageUrl: data.secure_url,
+      createdAt: new Date()
+    });
+
+    alert("Blog added successfully ✅");
+    document.getElementById("blogTitle").value = "";
+    document.getElementById("blogDesc").value = "";
+    document.getElementById("blogImage").value = "";
+    progressBar.style.display = "none";
+
+  } catch (err) {
+    console.error(err);
+    alert("Error adding blog!");
+    progressBar.style.display = "none";
+  }
+};
+
+// 🔥 DELETE BLOG
+window.deleteBlog = async () => {
+  const deleteTitle = document.getElementById("blogDeleteTitle").value;
+  if (!deleteTitle) { alert("Enter blog title!"); return; }
+
+  const snapshot = await getDocs(collection(db, "blogs"));
+  let deleted = false;
+
+  snapshot.forEach(async (docItem) => {
+    if (docItem.data().title === deleteTitle) {
+      await deleteDoc(doc(db, "blogs", docItem.id));
+      deleted = true;
+    }
+  });
+
+  setTimeout(() => {
+    if (deleted) {
+      alert("Blog deleted ✅");
+      document.getElementById("blogDeleteTitle").value = "";
+    } else {
+      alert("Blog not found ❌");
+    }
+  }, 500);
+};
+</script>
+
+</body>
+</html>

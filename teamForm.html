@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Team Member - SpeedX</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+body {
+    font-family: 'Poppins', sans-serif;
+    background:#0f172a;
+    color:white;
+    padding:20px;
+}
+h2 { text-align:center; color:#facc15; }
+form {
+    max-width:500px;
+    margin:auto;
+    background:#1e293b;
+    padding:20px;
+    border-radius:10px;
+}
+input, textarea, select, button {
+    width:100%;
+    padding:10px;
+    margin:10px 0;
+    border-radius:6px;
+    border:none;
+}
+input, textarea, select {
+    background:#334155;
+    color:white;
+}
+button {
+    background:#3b82f6;
+    color:white;
+    cursor:pointer;
+}
+button:hover { background:#2563eb; }
+#preview { width:100%; margin-top:10px; display:none; border-radius:8px; }
+</style>
+</head>
+<body>
+
+<h2>🔥 Add Team Member</h2>
+
+<form id="teamForm">
+    <input type="text" id="name" placeholder="Name" required>
+    <input type="text" id="role" placeholder="Role" required>
+    <input type="text" id="company" placeholder="Company" value="SpeedX Bike Showroom" required>
+    <input type="text" id="experience" placeholder="Experience" required>
+    <input type="text" id="achievements" placeholder="Achievements">
+    <textarea id="description" placeholder="Description"></textarea>
+    
+    <label>Choose Image:</label>
+    <input type="file" id="imageFile" accept="image/*" required>
+    <img id="preview">
+
+    <button type="submit">Add Member</button>
+</form>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// 🔥 Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyAhWXQg6VYvz8JcrPu42Y__oGkARfi0x1U",
+  authDomain: "bikeroom-765b8.firebaseapp.com",
+  projectId: "bikeroom-765b8",
+  storageBucket: "bikeroom-765b8.appspot.com",
+  messagingSenderId: "505548164349",
+  appId: "1:505548164349:web:6f1111e3b71f5643ca0294"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const form = document.getElementById('teamForm');
+const imageFile = document.getElementById('imageFile');
+const preview = document.getElementById('preview');
+
+// 🔥 Preview Image
+imageFile.addEventListener('change', () => {
+    const file = imageFile.files[0];
+    if(file){
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+    }
+});
+
+// 🔥 Handle Form Submit
+form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+
+    const name = document.getElementById('name').value;
+    const role = document.getElementById('role').value;
+    const company = document.getElementById('company').value;
+    const experience = document.getElementById('experience').value;
+    const achievements = document.getElementById('achievements').value;
+    const description = document.getElementById('description').value;
+
+    const file = imageFile.files[0];
+    if(!file){ alert("Please select image"); return; }
+
+    // 🔥 Upload to Cloudinary
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'bike_upload'); // <-- Replace with your preset
+    formData.append('cloud_name', 'dvxnmsryu');       // <-- Replace with your Cloud name
+
+    const res = await fetch('https://api.cloudinary.com/v1_1/dvxnmsryu/image/upload', {
+        method:'POST',
+        body: formData
+    });
+
+    const data = await res.json();
+    const imageUrl = data.secure_url;
+
+    // 🔥 Save to Firestore
+    await addDoc(collection(db,'team'), {
+        name, role, company, experience, achievements, description, image: imageUrl
+    });
+
+    alert('✅ Team Member Added');
+    form.reset();
+    preview.style.display = "none";
+});
+</script>
+
+</body>
+</html>

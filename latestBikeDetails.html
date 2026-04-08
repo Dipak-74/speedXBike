@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bike Details</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+<style>
+body {
+    font-family: 'Poppins', sans-serif;
+    margin:0;
+    background:#323b4f;
+    color:white;
+}
+
+.container {
+    max-width:1000px;
+    margin:auto;
+    padding:20px;
+}
+
+.bike-img {
+    width:100%;
+    border-radius:15px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.bike-img:hover {
+    transform: scale(1.05);
+}
+
+h1 {
+    margin-top:20px;
+}
+
+.specs, .features {
+    display:flex;
+    flex-wrap:wrap;
+    gap:15px;
+    margin-top:15px;
+}
+
+.spec-box {
+    background:#1e293b;
+    padding:10px 15px;
+    border-radius:10px;
+}
+
+.feature-box {
+    background:#1e293b;
+    padding:10px;
+    border-radius:10px;
+}
+
+.price {
+    font-size:24px;
+    margin-top:15px;
+    color:#22c55e;
+}
+
+.actions {
+    margin-top:20px;
+    display:flex;
+    gap:15px;
+}
+
+.actions a {
+    padding:12px 20px;
+    background:#2563eb;
+    border-radius:10px;
+    text-decoration:none;
+    color:white;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+.actions a:hover {
+    background:#1e40af;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <img id="bikeImage" class="bike-img">
+
+    <h1 id="bikeName"></h1>
+
+    <div class="price" id="bikePrice"></div>
+
+    <div class="specs">
+        <div class="spec-box">Engine: <span id="engine"></span></div>
+        <div class="spec-box">CC: <span id="cc"></span></div>
+        <div class="spec-box">Power: <span id="power"></span></div>
+        <div class="spec-box">Weight: <span id="weight"></span></div>
+        <div class="spec-box">Fuel: <span id="fuel"></span></div>
+        <div class="spec-box">Color: <span id="color"></span></div>
+        <div class="spec-box">Year: <span id="year"></span></div>
+    </div>
+
+    <h2>Features</h2>
+    <div class="features">
+        <div class="feature-box" id="f1"></div>
+        <div class="feature-box" id="f2"></div>
+        <div class="feature-box" id="f3"></div>
+        <div class="feature-box" id="f4"></div>
+    </div>
+
+    <div class="actions">
+        <a id="viewTestRide" href="#">Book Test Ride</a>
+    </div>
+
+</div>
+
+<!-- 🔥 FIREBASE -->
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyAhWXQg6VYvz8JcrPu42Y__oGkARfi0x1U",
+    authDomain: "bikeroom-765b8.firebaseapp.com",
+    projectId: "bikeroom-765b8",
+    storageBucket: "bikeroom-765b8.appspot.com",
+    messagingSenderId: "505548164349",
+    appId: "1:505548164349:web:6f1111e3b71f5643ca0294"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// 🔹 GET ID FROM URL
+const urlParams = new URLSearchParams(window.location.search);
+const bikeId = urlParams.get("id");
+
+// 🔹 LOAD BIKE
+async function loadBike() {
+
+    const docRef = doc(db, "latestBike", bikeId);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+        const bike = docSnap.data();
+
+        document.getElementById("bikeImage").src = bike.image;
+        document.getElementById("bikeName").innerText = bike.name;
+        document.getElementById("bikePrice").innerText = "₹" + bike.price;
+
+        document.getElementById("engine").innerText = bike.engine;
+        document.getElementById("cc").innerText = bike.cc;
+        document.getElementById("power").innerText = bike.power;
+        document.getElementById("weight").innerText = bike.weight;
+        document.getElementById("fuel").innerText = bike.fuel;
+        document.getElementById("color").innerText = bike.color;
+        document.getElementById("year").innerText = bike.year;
+
+        document.getElementById("f1").innerText = bike.info1;
+        document.getElementById("f2").innerText = bike.info2;
+        document.getElementById("f3").innerText = bike.info3;
+        document.getElementById("f4").innerText = bike.info4;
+
+        // 🔹 Set test ride button link
+        document.getElementById("viewTestRide").href = `testRide.html?bikeId=${bikeId}`;
+
+    } else {
+        alert("Bike not found ❌");
+    }
+}
+
+loadBike();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpeedX - Premium Bikes Collection</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--light); color: var(--dark); }
+        
+        /* Navigation */
+        .navbar {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .logo i { font-size: 2rem; }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+        
+        .nav-links a:hover::after, .nav-links a.active::after {
+            width: 100%;
+        }
+        
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .cart-btn, .theme-toggle {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: none;
+            background: var(--light);
+            color: var(--dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .cart-btn:hover, .theme-toggle:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            background: var(--gradient);
+            padding: 20px 5px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveGrid 20s linear infinite;
+        }
+        
+        @keyframes moveGrid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .hero-content { position: relative; z-index: 1; }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .hero p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+        
+        /* Search & Filter */
+        .search-section {
+            padding: 40px 20px;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .search-container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 18px 25px 18px 55px;
+            border: 2px solid #e2e8f0;
+            border-radius: 50px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1.2rem;
+        }
+        
+        .filter-btn {
+            padding: 18px 35px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .filter-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+        }
+        
+        /* Category Pills */
+        .categories {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+        
+        .category-pill {
+            padding: 12px 25px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .category-pill:hover, .category-pill.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        /* Bikes Grid */
+        .bikes-section {
+            padding: 60px 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .section-header h2 {
+            font-size: 2.5rem;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+        
+        .section-header p {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+        
+        .bikes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 35px;
+        }
+        
+        /* Bike Card */
+        .bike-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+        
+        .bike-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+        }
+        
+        .bike-image-container {
+            position: relative;
+            height: 250px;
+            overflow: hidden;
+        }
+        
+        .bike-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        
+        .bike-card:hover .bike-image {
+            transform: scale(1.1);
+        }
+        
+        .bike-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            z-index: 2;
+        }
+        
+        .bike-badge.new {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        
+        .wishlist-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #64748b;
+            transition: all 0.3s;
+            z-index: 2;
+        }
+        
+        .wishlist-btn:hover, .wishlist-btn.active {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .bike-content {
+            padding: 25px;
+        }
+        
+        .bike-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+        
+        .bike-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+        
+        .bike-brand {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+        
+        .bike-price {
+            text-align: right;
+        }
+        
+        .price-value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        
+        .price-label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+        
+        /* Rating */
+        .bike-rating {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .stars {
+            display: flex;
+            gap: 3px;
+        }
+        
+        .stars i {
+            color: #fbbf24;
+            font-size: 0.9rem;
+        }
+        
+        .stars i.empty {
+            color: #e2e8f0;
+        }
+        
+        .rating-value {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .rating-count {
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
+        
+        /* Specs */
+        .bike-specs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .spec-item {
+            text-align: center;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+        
+        .spec-item i {
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .spec-value {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--dark);
+        }
+        
+        .spec-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+        
+        /* Actions */
+        .bike-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
+        }
+        
+        .btn-secondary {
+            background: #f1f5f9;
+            color: var(--dark);
+        }
+        
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+        
+        /* Rating Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            animation: modalPop 0.3s ease;
+        }
+        
+        @keyframes modalPop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .modal h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .star-rating-input {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 25px 0;
+        }
+        
+        .star-rating-input i {
+            font-size: 2.5rem;
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .star-rating-input i:hover, .star-rating-input i.active {
+            color: #fbbf24;
+            transform: scale(1.2);
+        }
+        
+        /* Dark Mode */
+        body.dark-mode {
+            --light: #0f172a;
+            --dark: #f8fafc;
+            background: #0f172a;
+        }
+        
+        body.dark-mode .navbar {
+            background: rgba(15, 23, 42, 0.95);
+        }
+        
+        body.dark-mode .bike-card,
+        body.dark-mode .modal {
+            background: #1e293b;
+        }
+        
+        body.dark-mode .spec-item {
+            background: #334155;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 60px 20px 30px;
+            margin-top: 80px;
+        }
+        
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+        
+        .footer-section h4 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        
+        .footer-section a {
+            display: block;
+            color: #94a3b8;
+            text-decoration: none;
+            margin-bottom: 10px;
+            transition: color 0.3s;
+        }
+        
+        .footer-section a:hover {
+            color: white;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #334155;
+            color: #64748b;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .bikes-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="HomePage.html" class="logo">
+                <i class="fas fa-motorcycle"></i>
+                SpeedX
+            </a>
+            <ul class="nav-links">
+                <li><a href="HomePage.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="service.html">Services</a></li>
+                <li><a href="bikesPAge.html" class="active">Bikes</a></li>
+                <li><a href="team.html">Team</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
+                <button class="cart-btn" onclick="window.location.href='cart.html'">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Premium Bikes Collection</h1>
+        </div>
+    </section>
+
+    <!-- Search Section -->
+    <section class="search-section">
+        <div class="search-container">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search bikes by name, brand, or category...">
+            </div>
+            <button class="filter-btn" onclick="filterBikes()">
+                <i class="fas fa-filter"></i> Filter
+            </button>
+        </div>
+        <div class="categories">
+            <div class="category-pill active" onclick="filterCategory('all')">All Bikes</div>
+            <div class="category-pill" onclick="filterCategory('sports')">Sports</div>
+            <div class="category-pill" onclick="filterCategory('cruiser')">Cruiser</div>
+            <div class="category-pill" onclick="filterCategory('commuter')">Commuter</div>
+            <div class="category-pill" onclick="filterCategory('electric')">Electric</div>
+        </div>
+    </section>
+
+    <!-- Bikes Section -->
+    <section class="bikes-section">
+        <div class="section-header">
+            <h2>Featured Bikes</h2>
+            <p>Top-rated bikes with customer reviews and ratings</p>
+        </div>
+        <div class="bikes-grid" id="bikesGrid">
+            <!-- Bikes will be loaded dynamically -->
+        </div>
+    </section>
+
+    <!-- Rating Modal -->
+    <div class="modal-overlay" id="ratingModal">
+        <div class="modal">
+            <h3><i class="fas fa-star"></i> Rate this Bike</h3>
+            <p id="ratingBikeName">Bike Name</p>
+            <div class="star-rating-input" id="starInput">
+                <i class="fas fa-star" data-rating="1"></i>
+                <i class="fas fa-star" data-rating="2"></i>
+                <i class="fas fa-star" data-rating="3"></i>
+                <i class="fas fa-star" data-rating="4"></i>
+                <i class="fas fa-star" data-rating="5"></i>
+            </div>
+            <button class="btn btn-primary" onclick="submitRating()">
+                <i class="fas fa-check"></i> Submit Rating
+            </button>
+            <button class="btn btn-secondary" onclick="closeRatingModal()" style="margin-top: 10px;">
+                Cancel
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>SpeedX</h4>
+                <p style="color: #94a3b8; line-height: 1.8;">Your trusted destination for premium motorcycles with authentic customer reviews.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="HomePage.html">Home</a>
+                <a href="bikesPAge.html">Bikes</a>
+                <a href="service.html">Services</a>
+                <a href="about.html">About Us</a>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <a href="#"><i class="fas fa-phone"></i> +91 98765 43210</a>
+                <a href="#"><i class="fas fa-envelope"></i> info@speedx.com</a>
+                <a href="#"><i class="fas fa-map-marker-alt"></i> Mumbai, India</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 SpeedX Bike Showroom. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAhWXQg6VYvz8JcrPu42Y__oGkARfi0x1U",
+            authDomain: "bikeroom-765b8.firebaseapp.com",
+            projectId: "bikeroom-765b8",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let currentRatingBike = null;
+        let selectedRating = 0;
+
+        // Load bikes with ratings
+        function loadBikes() {
+            const bikeGrid = document.getElementById("bikesGrid");
+            const ratings = JSON.parse(localStorage.getItem('bikeRatings')) || {};
+            
+            const q = query(collection(db, "bikes"), orderBy("createdAt", "desc"));
+            
+            onSnapshot(q, (snapshot) => {
+                bikeGrid.innerHTML = "";
+                
+                snapshot.forEach((doc) => {
+                    const bike = doc.data();
+                    const bikeRating = ratings[bike.name] || { rating: 0, count: 0 };
+                    
+                    bikeGrid.innerHTML += `
+                        <div class="bike-card" data-category="${bike.category || 'sports'}">
+                            <div class="bike-image-container">
+                                <img src="${bike.image}" alt="${bike.name}" class="bike-image">
+                                <span class="bike-badge ${bike.badge === 'New' ? 'new' : ''}">${bike.badge || 'Popular'}</span>
+                                <button class="wishlist-btn" onclick="toggleWishlist(this)">
+                                    <i class="far fa-heart"></i>
+                                </button>
+                            </div>
+                            <div class="bike-content">
+                                <div class="bike-header">
+                                    <div>
+                                        <div class="bike-title">${bike.name}</div>
+                                        <div class="bike-brand">${bike.company || 'SpeedX'}</div>
+                                    </div>
+                                    <div class="bike-price">
+                                        <div class="price-value">₹${bike.price}</div>
+                                        <div class="price-label">On-road price</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bike-rating">
+                                    <div class="stars">
+                                        ${generateStars(bikeRating.rating)}
+                                    </div>
+                                    <span class="rating-value">${bikeRating.rating.toFixed(1)}</span>
+                                    <span class="rating-count">(${bikeRating.count} reviews)</span>
+                                    <button onclick="openRatingModal('${bike.name}')" style="margin-left: auto; background: none; border: none; color: var(--primary); cursor: pointer;">
+                                        <i class="fas fa-pen"></i> Rate
+                                    </button>
+                                </div>
+                                
+                                <div class="bike-specs">
+                                    <div class="spec-item">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <div class="spec-value">${bike.cc || '150'}cc</div>
+                                        <div class="spec-label">Engine</div>
+                                    </div>
+                                    <div class="spec-item">
+                                        <i class="fas fa-gas-pump"></i>
+                                        <div class="spec-value">${bike.mileage || '45'}</div>
+                                        <div class="spec-label">km/l</div>
+                                    </div>
+                                    <div class="spec-item">
+                                        <i class="fas fa-weight-hanging"></i>
+                                        <div class="spec-value">${bike.weight || '140'}</div>
+                                        <div class="spec-label">kg</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bike-actions">
+                                    <button class="btn btn-primary" id="cartBtn-${doc.id}" onclick="handleCartAction('${doc.id}', '${bike.name}', '${bike.price}', '${bike.image}')">
+                                        <i class="fas fa-cart-plus"></i> Add to Cart
+                                    </button>
+                                    <a href="details.html?id=${doc.id}" class="btn btn-secondary">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                updateCartCount();
+                updateCartButtons();
+            });
+        }
+
+        function generateStars(rating) {
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= Math.floor(rating)) {
+                    stars += '<i class="fas fa-star"></i>';
+                } else if (i - 0.5 <= rating) {
+                    stars += '<i class="fas fa-star-half-alt"></i>';
+                } else {
+                    stars += '<i class="far fa-star empty"></i>';
+                }
+            }
+            return stars;
+        }
+
+        // Cart functionality
+        window.handleCartAction = function(id, name, price, image) {
+            const btn = document.getElementById('cartBtn-' + id);
+            const btnText = btn.innerHTML;
+            
+            // If button shows "Go to Cart", navigate to cart
+            if (btnText.includes('Go to Cart')) {
+                window.location.href = 'cart.html';
+                return;
+            }
+            
+            // Otherwise, add to cart
+            let cart = JSON.parse(localStorage.getItem('cartItems')) || [];
+            
+            const exists = cart.find(item => item.name === name);
+            if (exists) {
+                // Already in cart, change to Go to Cart
+                btn.innerHTML = '<i class="fas fa-shopping-cart"></i> Go to Cart';
+                btn.style.background = '#10b981';
+                return;
+            }
+            
+            // Add to cart
+            cart.push({ id, name, price, image });
+            localStorage.setItem('cartItems', JSON.stringify(cart));
+            updateCartCount();
+            
+            // Change button to Go to Cart
+            btn.innerHTML = '<i class="fas fa-shopping-cart"></i> Go to Cart';
+            btn.style.background = '#10b981';
+        };
+
+        // Check cart status on load and update buttons
+        function updateCartButtons() {
+            const cart = JSON.parse(localStorage.getItem('cartItems')) || [];
+            cart.forEach(item => {
+                const btn = document.getElementById('cartBtn-' + item.id);
+                if (btn) {
+                    btn.innerHTML = '<i class="fas fa-shopping-cart"></i> Go to Cart';
+                    btn.style.background = '#10b981';
+                }
+            });
+        }
+
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cartItems')) || [];
+            document.getElementById('cartCount').textContent = cart.length;
+        }
+
+        // Wishlist
+        window.toggleWishlist = function(btn) {
+            btn.classList.toggle('active');
+            const icon = btn.querySelector('i');
+            icon.classList.toggle('far');
+            icon.classList.toggle('fas');
+        };
+
+        // Rating Modal
+        window.openRatingModal = function(bikeName) {
+            currentRatingBike = bikeName;
+            document.getElementById('ratingBikeName').textContent = bikeName;
+            document.getElementById('ratingModal').classList.add('active');
+            selectedRating = 0;
+            updateStarDisplay();
+        };
+
+        window.closeRatingModal = function() {
+            document.getElementById('ratingModal').classList.remove('active');
+        };
+
+        // Star rating interaction
+        document.getElementById('starInput').addEventListener('click', function(e) {
+            if (e.target.dataset.rating) {
+                selectedRating = parseInt(e.target.dataset.rating);
+                updateStarDisplay();
+            }
+        });
+
+        function updateStarDisplay() {
+            const stars = document.querySelectorAll('#starInput i');
+            stars.forEach((star, index) => {
+                if (index < selectedRating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        window.submitRating = function() {
+            if (selectedRating === 0) {
+                alert('Please select a rating!');
+                return;
+            }
+            
+            let ratings = JSON.parse(localStorage.getItem('bikeRatings')) || {};
+            
+            if (!ratings[currentRatingBike]) {
+                ratings[currentRatingBike] = { rating: 0, count: 0, total: 0 };
+            }
+            
+            ratings[currentRatingBike].total += selectedRating;
+            ratings[currentRatingBike].count += 1;
+            ratings[currentRatingBike].rating = ratings[currentRatingBike].total / ratings[currentRatingBike].count;
+            
+            localStorage.setItem('bikeRatings', JSON.stringify(ratings));
+            
+            alert('Thank you for rating!');
+            closeRatingModal();
+            loadBikes();
+        };
+
+        // Theme Toggle
+        window.toggleTheme = function() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.getElementById('themeIcon');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        };
+
+        // Filter functions
+        window.filterCategory = function(category) {
+            document.querySelectorAll('.category-pill').forEach(pill => pill.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const cards = document.querySelectorAll('.bike-card');
+            cards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        };
+
+        window.filterBikes = function() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.bike-card');
+            
+            cards.forEach(card => {
+                const title = card.querySelector('.bike-title').textContent.toLowerCase();
+                const brand = card.querySelector('.bike-brand').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || brand.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        };
+
+        // Search input listener
+        document.getElementById('searchInput').addEventListener('input', filterBikes);
+
+        // Load saved theme
+        if (localStorage.getItem('theme') === 'dark') {
+            toggleTheme();
+        }
+
+        // Initialize
+        loadBikes();
+    </script>
+</body>
+</html>

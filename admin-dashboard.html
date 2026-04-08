@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SpeedX Analytics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f1f5f9; }
+        
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            position: fixed;
+            left: 0;
+            top: 0;
+            color: white;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        
+        .sidebar-header {
+            padding: 30px 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-header h1 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .sidebar-menu {
+            padding: 20px 15px;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 20px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #94a3b8;
+            text-decoration: none;
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+        
+        .menu-item i { font-size: 1.2rem; width: 24px; }
+        
+        .main-content {
+            margin-left: 280px;
+            padding: 30px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .header h2 { color: #1e293b; font-size: 1.8rem; }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+        
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.12); }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .stat-icon.blue { background: #dbeafe; color: #2563eb; }
+        .stat-icon.green { background: #d1fae5; color: #059669; }
+        .stat-icon.orange { background: #ffedd5; color: #ea580c; }
+        .stat-icon.purple { background: #f3e8ff; color: #9333ea; }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        
+        .stat-label { color: #64748b; font-size: 0.95rem; }
+        
+        .stat-change {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+        
+        .stat-change.positive { background: #d1fae5; color: #059669; }
+        .stat-change.negative { background: #fee2e2; color: #dc2626; }
+        
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-card {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        
+        .chart-card h3 {
+            color: #1e293b;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .ml-prediction {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: white;
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+        }
+        
+        .ml-prediction h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .prediction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .prediction-item {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .prediction-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #60a5fa;
+        }
+        
+        .orders-section {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        
+        .orders-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .orders-header h3 { color: #1e293b; }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f1f5f9;
+            padding: 10px 15px;
+            border-radius: 10px;
+        }
+        
+        .search-box input {
+            border: none;
+            background: none;
+            outline: none;
+            width: 200px;
+        }
+        
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .orders-table th, .orders-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .orders-table th {
+            color: #64748b;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+        
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .status-confirmed { background: #d1fae5; color: #059669; }
+        .status-pending { background: #fef3c7; color: #d97706; }
+        .status-delivered { background: #dbeafe; color: #2563eb; }
+        
+        .bike-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .bike-rating i { color: #fbbf24; }
+        
+        @media (max-width: 768px) {
+            .sidebar { width: 100%; height: auto; position: relative; }
+            .main-content { margin-left: 0; }
+            .charts-section { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1><i class="fas fa-motorcycle"></i> SpeedX Admin</h1>
+        </div>
+        <div class="sidebar-menu">
+            <a href="#dashboard" class="menu-item active" onclick="showSection('dashboard')">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </a>
+            <a href="#orders" class="menu-item" onclick="showSection('orders')">
+                <i class="fas fa-shopping-cart"></i> Orders
+            </a>
+            <a href="#bikes" class="menu-item" onclick="showSection('bikes')">
+                <i class="fas fa-motorcycle"></i> Bikes Management
+            </a>
+            <a href="#analytics" class="menu-item" onclick="showSection('analytics')">
+                <i class="fas fa-brain"></i> ML Analytics
+            </a>
+            <a href="#reports" class="menu-item" onclick="showSection('reports')">
+                <i class="fas fa-file-pdf"></i> Reports
+            </a>
+            <a href="for..html" class="menu-item">
+                <i class="fas fa-plus-circle"></i> Add Bike
+            </a>
+            <a href="formlatestbike.html" class="menu-item">
+                <i class="fas fa-star"></i> Latest Bike
+            </a>
+            <a href="blogform.html" class="menu-item">
+                <i class="fas fa-blog"></i> Blog
+            </a>
+            <a href="serviceFormPage.html" class="menu-item">
+                <i class="fas fa-wrench"></i> Service
+            </a>
+            <a href="teamForm.html" class="menu-item">
+                <i class="fas fa-users"></i> Team
+            </a>
+            <a href="HomePage.html" class="menu-item">
+                <i class="fas fa-home"></i> View Website
+            </a>
+            <div class="menu-item" onclick="logout()" style="margin-top: 30px;">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h2><i class="fas fa-tachometer-alt"></i> Dashboard Overview</h2>
+            <div class="header-actions">
+                <button class="btn btn-success" onclick="generatePDF()">
+                    <i class="fas fa-download"></i> Export PDF Report
+                </button>
+                <button class="btn btn-primary" onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </div>
+
+        <!-- ML Predictions Section -->
+        <div class="ml-prediction">
+            <h3><i class="fas fa-robot"></i> AI-Powered Sales Predictions (Machine Learning)</h3>
+            <div class="prediction-grid">
+                <div class="prediction-item">
+                    <p>Tomorrow's Predicted Sales</p>
+                    <div class="prediction-value" id="predictedSales">₹0</div>
+                    <small>Based on historical data</small>
+                </div>
+                <div class="prediction-item">
+                    <p>Top Selling Bike (Predicted)</p>
+                    <div class="prediction-value" id="topBikePrediction">-</div>
+                    <small>ML Algorithm Analysis</small>
+                </div>
+                <div class="prediction-item">
+                    <p>Expected Orders</p>
+                    <div class="prediction-value" id="expectedOrders">0</div>
+                    <small>Next 7 days forecast</small>
+                </div>
+                <div class="prediction-item">
+                    <p>Revenue Growth</p>
+                    <div class="prediction-value" id="revenueGrowth">0%</div>
+                    <small>Month-over-month</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-value" id="totalRevenue">₹0</div>
+                        <div class="stat-label">Total Revenue</div>
+                    </div>
+                    <div class="stat-icon blue"><i class="fas fa-rupee-sign"></i></div>
+                </div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> <span id="revenueChange">0%</span> this month
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-value" id="totalOrders">0</div>
+                        <div class="stat-label">Total Orders</div>
+                    </div>
+                    <div class="stat-icon green"><i class="fas fa-shopping-bag"></i></div>
+                </div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> <span id="ordersChange">0%</span> this month
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-value" id="totalBikes">0</div>
+                        <div class="stat-label">Bikes Sold</div>
+                    </div>
+                    <div class="stat-icon orange"><i class="fas fa-motorcycle"></i></div>
+                </div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> <span id="bikesChange">0%</span> this month
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-value" id="avgRating">0.0</div>
+                        <div class="stat-label">Average Rating</div>
+                    </div>
+                    <div class="stat-icon purple"><i class="fas fa-star"></i></div>
+                </div>
+                <div class="stat-change positive">
+                    <i class="fas fa-star"></i> Customer satisfaction
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <div class="chart-card">
+                <h3><i class="fas fa-chart-bar"></i> Sales Analytics</h3>
+                <canvas id="salesChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3><i class="fas fa-chart-pie"></i> Popular Bikes</h3>
+                <canvas id="bikesChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="orders-section">
+            <div class="orders-header">
+                <h3><i class="fas fa-list"></i> Recent Orders</h3>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchOrders" placeholder="Search orders..." onkeyup="searchOrders()">
+                </div>
+            </div>
+            <table class="orders-table" id="ordersTable">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Bike</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Rating</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                    <!-- Orders will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAhWXQg6VYvz8JcrPu42Y__oGkARfi0x1U",
+            authDomain: "bikeroom-765b8.firebaseapp.com",
+            projectId: "bikeroom-765b8",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let salesChart, bikesChart;
+        let allOrders = [];
+
+        // Load Dashboard Data
+        async function loadDashboardData() {
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            allOrders = orders;
+            
+            // Calculate statistics
+            const totalRevenue = orders.reduce((sum, order) => sum + (order.total || 0), 0);
+            const totalOrders = orders.length;
+            const totalBikes = orders.reduce((sum, order) => sum + (order.items?.length || 1), 0);
+            
+            // Calculate average rating
+            const ratings = JSON.parse(localStorage.getItem('bikeRatings')) || {};
+            let totalRating = 0;
+            let ratingCount = 0;
+            Object.values(ratings).forEach(r => {
+                totalRating += r.rating || 0;
+                ratingCount++;
+            });
+            const avgRating = ratingCount > 0 ? (totalRating / ratingCount).toFixed(1) : '0.0';
+            
+            // Update stats
+            document.getElementById('totalRevenue').textContent = '₹' + totalRevenue.toLocaleString('en-IN');
+            document.getElementById('totalOrders').textContent = totalOrders;
+            document.getElementById('totalBikes').textContent = totalBikes;
+            document.getElementById('avgRating').textContent = avgRating;
+            
+            // ML Predictions (Simple algorithm based on historical data)
+            calculateMLPredictions(orders);
+            
+            // Render charts
+            renderCharts(orders);
+            
+            // Render orders table
+            renderOrdersTable(orders);
+        }
+
+        // ML Prediction Algorithm
+        function calculateMLPredictions(orders) {
+            if (orders.length === 0) {
+                document.getElementById('predictedSales').textContent = '₹0';
+                document.getElementById('topBikePrediction').textContent = '-';
+                document.getElementById('expectedOrders').textContent = '0';
+                document.getElementById('revenueGrowth').textContent = '0%';
+                return;
+            }
+
+            // Group orders by date
+            const dailySales = {};
+            const bikeSales = {};
+            
+            orders.forEach(order => {
+                const date = new Date(order.orderDate).toDateString();
+                dailySales[date] = (dailySales[date] || 0) + (order.total || 0);
+                
+                order.items?.forEach(item => {
+                    bikeSales[item.name] = (bikeSales[item.name] || 0) + 1;
+                });
+            });
+            
+            // Calculate average daily sales
+            const salesValues = Object.values(dailySales);
+            const avgDailySales = salesValues.reduce((a, b) => a + b, 0) / salesValues.length;
+            
+            // Predict tomorrow's sales (with 10% growth trend)
+            const predictedSales = Math.round(avgDailySales * 1.1);
+            
+            // Find top selling bike
+            const topBike = Object.entries(bikeSales)
+                .sort((a, b) => b[1] - a[1])[0];
+            
+            // Calculate expected orders (based on average)
+            const avgOrdersPerDay = orders.length / salesValues.length;
+            const expectedOrders = Math.round(avgOrdersPerDay * 7); // Next 7 days
+            
+            // Calculate revenue growth
+            const sortedDates = Object.keys(dailySales).sort();
+            if (sortedDates.length >= 2) {
+                const recentSales = dailySales[sortedDates[sortedDates.length - 1]];
+                const previousSales = dailySales[sortedDates[sortedDates.length - 2]];
+                const growth = previousSales > 0 ? ((recentSales - previousSales) / previousSales * 100).toFixed(1) : 0;
+                document.getElementById('revenueGrowth').textContent = growth + '%';
+            }
+            
+            document.getElementById('predictedSales').textContent = '₹' + predictedSales.toLocaleString('en-IN');
+            document.getElementById('topBikePrediction').textContent = topBike ? topBike[0].split(' ')[0] : '-';
+            document.getElementById('expectedOrders').textContent = expectedOrders;
+        }
+
+        // Render Charts
+        function renderCharts(orders) {
+            // Sales Chart
+            const salesCtx = document.getElementById('salesChart').getContext('2d');
+            
+            // Group sales by month
+            const monthlySales = {};
+            orders.forEach(order => {
+                const month = new Date(order.orderDate).toLocaleString('default', { month: 'short' });
+                monthlySales[month] = (monthlySales[month] || 0) + (order.total || 0);
+            });
+            
+            salesChart = new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: Object.keys(monthlySales),
+                    datasets: [{
+                        label: 'Sales (₹)',
+                        data: Object.values(monthlySales),
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+            
+            // Bikes Chart
+            const bikeSales = {};
+            orders.forEach(order => {
+                order.items?.forEach(item => {
+                    bikeSales[item.name] = (bikeSales[item.name] || 0) + 1;
+                });
+            });
+            
+            const topBikes = Object.entries(bikeSales)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+            
+            bikesChart = new Chart(document.getElementById('bikesChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: topBikes.map(b => b[0].substring(0, 15) + '...'),
+                    datasets: [{
+                        data: topBikes.map(b => b[1]),
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        // Render Orders Table
+        function renderOrdersTable(orders) {
+            const tbody = document.getElementById('ordersTableBody');
+            tbody.innerHTML = '';
+            
+            const ratings = JSON.parse(localStorage.getItem('bikeRatings')) || {};
+            
+            orders.slice().reverse().forEach(order => {
+                const row = document.createElement('tr');
+                const bikeName = order.items?.[0]?.name || 'Unknown Bike';
+                const bikeRating = ratings[bikeName]?.rating || 0;
+                
+                row.innerHTML = `
+                    <td>${order.orderId}</td>
+                    <td>${order.userDetails?.name || 'Unknown'}</td>
+                    <td>${bikeName}</td>
+                    <td>₹${(order.total || 0).toLocaleString('en-IN')}</td>
+                    <td>${new Date(order.orderDate).toLocaleDateString()}</td>
+                    <td><span class="status-badge status-confirmed">Confirmed</span></td>
+                    <td>
+                        <div class="bike-rating">
+                            ${generateStars(bikeRating)}
+                            <span>(${bikeRating})</span>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function generateStars(rating) {
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= rating) {
+                    stars += '<i class="fas fa-star"></i>';
+                } else if (i - 0.5 <= rating) {
+                    stars += '<i class="fas fa-star-half-alt"></i>';
+                } else {
+                    stars += '<i class="far fa-star"></i>';
+                }
+            }
+            return stars;
+        }
+
+        // Search Orders
+        window.searchOrders = function() {
+            const searchTerm = document.getElementById('searchOrders').value.toLowerCase();
+            const filteredOrders = allOrders.filter(order => 
+                order.orderId?.toLowerCase().includes(searchTerm) ||
+                order.userDetails?.name?.toLowerCase().includes(searchTerm) ||
+                order.items?.[0]?.name?.toLowerCase().includes(searchTerm)
+            );
+            renderOrdersTable(filteredOrders);
+        };
+
+        // Generate PDF Report
+        window.generatePDF = function() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Title
+            doc.setFontSize(20);
+            doc.text('SpeedX Bike Showroom - Sales Report', 20, 20);
+            
+            // Date
+            doc.setFontSize(12);
+            doc.text('Generated on: ' + new Date().toLocaleString(), 20, 30);
+            
+            // Summary
+            const totalRevenue = allOrders.reduce((sum, order) => sum + (order.total || 0), 0);
+            doc.text('Total Revenue: ₹' + totalRevenue.toLocaleString('en-IN'), 20, 45);
+            doc.text('Total Orders: ' + allOrders.length, 20, 52);
+            
+            // Orders Table
+            const tableData = allOrders.map(order => [
+                order.orderId,
+                order.userDetails?.name || 'Unknown',
+                order.items?.[0]?.name || 'Unknown',
+                '₹' + (order.total || 0).toLocaleString('en-IN'),
+                new Date(order.orderDate).toLocaleDateString()
+            ]);
+            
+            doc.autoTable({
+                head: [['Order ID', 'Customer', 'Bike', 'Amount', 'Date']],
+                body: tableData,
+                startY: 60,
+                theme: 'grid',
+                headStyles: { fillColor: [59, 130, 246] }
+            });
+            
+            doc.save('SpeedX_Sales_Report.pdf');
+        };
+
+        // Refresh Data
+        window.refreshData = function() {
+            loadDashboardData();
+        };
+
+        // Logout
+        window.logout = function() {
+            localStorage.removeItem('isLoggedIn');
+            window.location.href = 'login.html';
+        };
+
+        // Show Section
+        window.showSection = function(section) {
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+            event.target.closest('.menu-item').classList.add('active');
+        };
+
+        // Load data on page load
+        loadDashboardData();
+    </script>
+</body>
+</html>

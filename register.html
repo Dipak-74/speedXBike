@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SpeedX - Register</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+<style>
+body { 
+    font-family:'Inter',sans-serif; 
+    background: linear-gradient(135deg,#1e3a8a,#3b82f6); 
+    display:flex; justify-content:center; align-items:center; min-height:100vh; 
+}
+.container { 
+    background:white; padding:2rem; border-radius:15px; 
+    box-shadow:0 5px 20px rgba(0,0,0,0.2); width:350px; 
+}
+.container h2 { 
+    text-align:center; margin-bottom:1.5rem; color:#2563eb; 
+}
+input { 
+    width:100%; padding:0.8rem; margin-bottom:1rem; border-radius:8px; border:1px solid #ccc; 
+}
+button { 
+    width:100%; padding:0.8rem; background:#2563eb; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600;
+    transition: all 0.3s;
+}
+button:hover { 
+    background:#1e40af; 
+}
+button:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+}
+.error-message {
+    color: #ef4444;
+    font-size: 0.85rem;
+    margin-top: -0.5rem;
+    margin-bottom: 0.5rem;
+    display: none;
+}
+.success-message {
+    color: #10b981;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    display: none;
+}
+p { 
+    text-align:center; margin-top:1rem; color:white; 
+}
+a { color:#facc15; text-decoration:underline; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2><i class="fas fa-user-plus"></i> Register</h2>
+    <div id="successMsg" class="success-message"></div>
+    <input type="text" id="name" placeholder="Full Name" required>
+    <div id="nameError" class="error-message"></div>
+    <input type="email" id="email" placeholder="Email" required>
+    <div id="emailError" class="error-message"></div>
+    <input type="tel" id="phone" placeholder="Phone Number" maxlength="10" required>
+    <div id="phoneError" class="error-message"></div>
+    <input type="password" id="password" placeholder="Password (min 6 characters)" minlength="6" required>
+    <div id="passwordError" class="error-message"></div>
+    <button id="registerBtn"><i class="fas fa-user-plus"></i> Register</button>
+    <p>Already have an account? <a href="login.html">Login</a></p>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// Firebase config
+const firebaseConfig = {
+    apiKey: "AIzaSyAhWXQg6VYvz8JcrPu42Y__oGkARfi0x1U",
+    authDomain: "bikeroom-765b8.firebaseapp.com",
+    projectId: "bikeroom-765b8",
+    appId: "1:505548164349:web:6f1111e3b71f5643ca0294"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Clear error messages
+function clearErrors() {
+    document.querySelectorAll('.error-message').forEach(el => {
+        el.style.display = 'none';
+        el.textContent = '';
+    });
+    document.getElementById('successMsg').style.display = 'none';
+}
+
+// Show error message
+function showError(fieldId, message) {
+    const errorEl = document.getElementById(fieldId + 'Error');
+    errorEl.textContent = message;
+    errorEl.style.display = 'block';
+}
+
+// Validate inputs
+function validateInputs(name, email, phone, password) {
+    let isValid = true;
+    clearErrors();
+    
+    if (!name) {
+        showError('name', 'Please enter your full name');
+        isValid = false;
+    }
+    
+    if (!email) {
+        showError('email', 'Please enter your email');
+        isValid = false;
+    } else if (!email.includes('@') || !email.includes('.')) {
+        showError('email', 'Please enter a valid email address');
+        isValid = false;
+    }
+    
+    if (!phone) {
+        showError('phone', 'Please enter your phone number');
+        isValid = false;
+    } else if (phone.length !== 10 || !/^[0-9]+$/.test(phone)) {
+        showError('phone', 'Please enter a valid 10-digit phone number');
+        isValid = false;
+    }
+    
+    if (!password) {
+        showError('password', 'Please enter a password');
+        isValid = false;
+    } else if (password.length < 6) {
+        showError('password', 'Password must be at least 6 characters');
+        isValid = false;
+    }
+    
+    return isValid;
+}
+
+document.getElementById('registerBtn').onclick = async () => {
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const password = document.getElementById('password').value;
+    
+    // Validate inputs
+    if (!validateInputs(name, email, phone, password)) {
+        return;
+    }
+    
+    const btn = document.getElementById('registerBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
+
+    try {
+        // Check for admin credentials
+        if (email === "dipak74@gmail.com" && password === "admin@123") {
+            window.location.href = "admin.html";
+            return;
+        }
+
+        // 1️⃣ Create user in Firebase Auth
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // 2️⃣ Update display name in Auth
+        await updateProfile(user, { displayName: name });
+
+        // 3️⃣ Save extra info in Firestore
+        await setDoc(doc(db, "users", user.uid), {
+            customerName: name,
+            email: email,
+            contactNumber: phone,
+            createdAt: new Date()
+        });
+
+        // Show success message
+        const successMsg = document.getElementById('successMsg');
+        successMsg.textContent = 'Registration successful! Redirecting...';
+        successMsg.style.display = 'block';
+        
+        // Redirect after short delay
+        setTimeout(() => {
+            window.location.href = "HomePage.html";
+        }, 1500);
+
+    } catch (err) {
+        console.error(err);
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-user-plus"></i> Register';
+        
+        // Show user-friendly error messages
+        let errorMessage = err.message;
+        if (err.code === 'auth/email-already-in-use') {
+            showError('email', 'This email is already registered. Please login.');
+        } else if (err.code === 'auth/invalid-email') {
+            showError('email', 'Invalid email address.');
+        } else if (err.code === 'auth/weak-password') {
+            showError('password', 'Password is too weak. Use at least 6 characters.');
+        } else if (err.code === 'auth/network-request-failed') {
+            alert('Network error. Please check your internet connection.');
+        } else {
+            alert('Error: ' + errorMessage);
+        }
+    }
+};
+</script>
+
+</body>
+</html>

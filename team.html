@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SpeedX Bike Showroom - Team</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg-color: #0f172a;
+    --header-bg: #1e293b;
+    --text-color: white;
+    --subtext-color: #94a3b8;
+    --highlight-color: #facc15;
+    --card-bg: #1e293b;
+    --card-shadow: rgba(255,255,255,0.2);
+}
+body { font-family:'Poppins',sans-serif; margin:0; background:var(--bg-color); color:var(--text-color);}
+ /* Global Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Navbar Animation */
+        .navbar {
+            background-color: #ffffff;
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: #1a73e8;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .logo img {
+            width: 32px;
+            height: 32px;
+        }
+
+        .nav-toggle {
+            display: none;
+        }
+
+        .nav-toggle-label {
+            display: none;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .nav-toggle-label span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: #1a73e8;
+            margin: 5px 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #5f6368;
+            font-weight: 500;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #1a73e8;
+            background-color: rgba(26, 115, 232, 0.1);
+        }
+
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .login-btn {
+            color: #1a73e8;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background-color: rgba(26, 115, 232, 0.1);
+        }
+
+        .register-btn {
+            background-color: #1a73e8;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 24px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .register-btn:hover {
+            background-color: #1557b0;
+        }
+
+        .profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1a73e8;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            background-color: #ffffff;
+            margin-left: 1rem;
+        }
+
+        .profile-btn:hover {
+            background-color: rgba(26, 115, 232, 0.1);
+        }
+
+        .profile-btn i {
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-toggle-label {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: white;
+                padding: 20px;
+                flex-direction: column;
+                gap: 1rem;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-toggle:checked~.nav-links {
+                display: flex;
+            }
+
+            .nav-toggle:checked~.nav-toggle-label span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+
+            .nav-toggle:checked~.nav-toggle-label span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .nav-toggle:checked~.nav-toggle-label span:nth-child(3) {
+                transform: rotate(-45deg) translate(7px, -7px);
+            }
+
+            .auth-buttons {
+                display: none;
+            }
+
+            .nav-links a {
+                width: 100%;
+                text-align: center;
+                padding: 12px;
+            }
+        }
+header{text-align:center;padding:60px 20px 40px;background:linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);position:relative;overflow:hidden;}
+header::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(circle at 30% 50%, rgba(245,158,11,0.1) 0%, transparent 50%);}
+header h1{color:#facc15;font-size:2.5rem;margin:0 0 10px 0;font-weight:700;position:relative;z-index:1;}
+header p{color:#94a3b8;font-size:1.1rem;position:relative;z-index:1;}
+.team-container{display:flex;flex-wrap:wrap;justify-content:center;gap:20px;padding:40px 20px;}
+.team-card{background:var(--card-bg);border-radius:15px;width:200px;text-align:center;padding:20px;cursor:pointer;transition:0.3s;}
+.team-card:hover{transform:translateY(-5px);box-shadow:0 8px 16px var(--card-shadow);}
+.team-card img{width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid var(--highlight-color);}
+.team-card h3{margin-top:10px;color:var(--highlight-color);}
+.modal {display:none; position:fixed; z-index:999; left:0; top:0;width:100%; height:100%;background:rgba(0,0,0,0.7); justify-content:center; align-items:center;}
+.modal-content {background:var(--card-bg); color:var(--text-color); padding:25px; border-radius:12px; max-width:500px; width:90%; text-align:left; position:relative;}
+.modal-content h2{margin-top:0;color:var(--highlight-color);}
+.close-btn{position:absolute; top:10px; right:15px; font-size:22px; cursor:pointer; color:var(--highlight-color);}
+</style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="HomePage.html" class="logo">
+                <img src="https://img.icons8.com/fluency/48/motorcycle.png" alt="AutoDrive Logo">
+                AutoDrive
+            </a>
+            <input type="checkbox" id="nav-toggle" class="nav-toggle">
+            <label for="nav-toggle" class="nav-toggle-label">
+                <span></span>
+                <span></span>
+                <span></span>
+            </label>
+            <ul class="nav-links">
+                <li><a href="HomePage.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="service.html">Services</a></li>
+                <li><a href="bikesPAge.html">Bikes</a></li>
+                <li><a href="team.html" class="active">Team</a></li>
+            </ul>
+            <div class="auth-buttons">
+                <a href="cart.html" class="cart-btn" style="color: #2563eb; font-size: 1.3rem; margin-right: 1rem;">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
+                <a href="profile1.html" id="profileBtn" class="profile-btn" style="color: #2563eb; font-size: 1.3rem;">
+                    <i class="fas fa-user"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+<header>
+<h1>Our SpeedX Team</h1>
+<p>Click on a profile to see details</p>
+</header>
+
+<div class="team-container" id="teamContainer">
+    <!-- Team Cards will be dynamically added here -->
+</div>
+
+<!-- Modal -->
+<div class="modal" id="profileModal">
+    <div class="modal-content">
+        <span class="close-btn" id="closeModal">&times;</span>
+        <h2 id="modalName"></h2>
+        <p><strong>Role:</strong> <span id="modalRole"></span></p>
+        <p><strong>Company:</strong> <span id="modalCompany"></span></p>
+        <p><strong>Experience:</strong> <span id="modalExp"></span></p>
+        <p><strong>Achievements:</strong> <span id="modalAch"></span></p>
+        <p><strong>Description:</strong> <span id="modalDesc"></span></p>
+        <img id="modalImg" style="width:150px;margin-top:10px;border-radius:50%;">
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyAhWXQg6VYvz8JcrPu42Y__oGkARfi0x1U",
+  authDomain: "bikeroom-765b8.firebaseapp.com",
+  projectId: "bikeroom-765b8",
+  storageBucket: "bikeroom-765b8.appspot.com",
+  messagingSenderId: "505548164349",
+  appId: "1:505548164349:web:6f1111e3b71f5643ca0294"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const container = document.getElementById('teamContainer');
+const modal = document.getElementById('profileModal');
+const closeModal = document.getElementById('closeModal');
+const modalName = document.getElementById('modalName');
+const modalRole = document.getElementById('modalRole');
+const modalCompany = document.getElementById('modalCompany');
+const modalExp = document.getElementById('modalExp');
+const modalAch = document.getElementById('modalAch');
+const modalDesc = document.getElementById('modalDesc');
+const modalImg = document.getElementById('modalImg');
+
+// 🔥 Realtime fetch with onSnapshot
+onSnapshot(collection(db,'team'), (snapshot) => {
+    container.innerHTML = ''; // Clear old cards
+    snapshot.forEach(doc => {
+        const data = doc.data();
+        const card = document.createElement('div');
+        card.classList.add('team-card');
+        card.innerHTML = `
+            <img src="${data.image}" alt="${data.name}">
+            <h3>${data.name}</h3>
+        `;
+        card.addEventListener('click', ()=>{
+            modalName.textContent = data.name;
+            modalRole.textContent = data.role;
+            modalCompany.textContent = data.company;
+            modalExp.textContent = data.experience;
+            modalAch.textContent = data.achievements;
+            modalDesc.textContent = data.description;
+            modalImg.src = data.image;
+            modal.style.display = "flex";
+        });
+        container.appendChild(card);
+    });
+});
+
+closeModal.addEventListener('click', ()=> modal.style.display = "none");
+window.addEventListener('click', e => { if(e.target === modal) modal.style.display = "none"; });
+</script>
+
+</body>
+</html>

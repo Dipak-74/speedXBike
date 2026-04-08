@@ -1,0 +1,45 @@
+type User @table {
+  displayName: String!
+  createdAt: Timestamp!
+  email: String
+  photoUrl: String
+  role: String
+}
+
+type Bike @table {
+  modelName: String!
+  brand: String!
+  price: Float!
+  type: String!
+  createdAt: Timestamp!
+  description: String
+  year: Int
+  color: String
+  frameMaterial: String
+  weight: Float
+  imageUrl: String
+}
+
+type Inquiry @table {
+  message: String!
+  createdAt: Timestamp!
+  contactEmail: String
+  contactPhone: String
+  status: String
+  user: User
+  bike: Bike
+}
+
+type FavoriteBike @table(key: ["user", "bike"]) {
+  createdAt: Timestamp!
+  user: User!
+  bike: Bike!
+}
+
+type Notification @table {
+  message: String!
+  createdAt: Timestamp!
+  type: String!
+  read: Boolean
+  user: User
+}

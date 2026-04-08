@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment - SpeedX Bike Showroom</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1e3a8a, #2563eb, #60a5fa);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+    }
+    .payment-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    .payment-header {
+      background: linear-gradient(135deg, #2563eb, #1e40af);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    .payment-header h1 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+    .payment-header p {
+      opacity: 0.9;
+    }
+    .payment-body {
+      padding: 30px;
+    }
+    .order-summary {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+    .order-summary h3 {
+      color: #1e293b;
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .summary-row:last-child {
+      border-bottom: none;
+    }
+    .summary-row.total {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #2563eb;
+      margin-top: 10px;
+      padding-top: 15px;
+      border-top: 2px solid #2563eb;
+    }
+    .payment-methods {
+      margin-bottom: 25px;
+    }
+    .payment-methods h3 {
+      color: #1e293b;
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+    }
+    .method-option {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .method-option:hover {
+      border-color: #2563eb;
+      background: #f0f7ff;
+    }
+    .method-option.active {
+      border-color: #2563eb;
+      background: #f0f7ff;
+    }
+    .method-option input[type="radio"] {
+      margin-right: 15px;
+      width: 20px;
+      height: 20px;
+      accent-color: #2563eb;
+    }
+    .method-icon {
+      width: 40px;
+      height: 40px;
+      margin-right: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f1f5f9;
+      border-radius: 8px;
+    }
+    .method-icon i {
+      font-size: 1.2rem;
+      color: #2563eb;
+    }
+    .method-info {
+      flex: 1;
+    }
+    .method-info h4 {
+      color: #1e293b;
+      font-size: 1rem;
+      margin-bottom: 3px;
+    }
+    .method-info p {
+      color: #64748b;
+      font-size: 0.85rem;
+    }
+    .btn-pay {
+      width: 100%;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      padding: 16px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .btn-pay:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+    }
+    .btn-pay:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    .secure-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 20px;
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+    .secure-badge i {
+      color: #10b981;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #64748b;
+      text-decoration: none;
+      margin-bottom: 20px;
+      transition: color 0.3s;
+    }
+    .back-link:hover {
+      color: #2563eb;
+    }
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    .loading-overlay.active {
+      display: flex;
+    }
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #2563eb;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .success-message {
+      display: none;
+      text-align: center;
+      padding: 40px;
+    }
+    .success-message.active {
+      display: block;
+    }
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+    .success-icon i {
+      font-size: 2.5rem;
+      color: white;
+    }
+    .order-details {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+      text-align: left;
+    }
+    .order-details h4 {
+      color: #1e293b;
+      margin-bottom: 15px;
+    }
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 0.95rem;
+    }
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+    .detail-row span:first-child {
+      color: #64748b;
+    }
+    .detail-row span:last-child {
+      color: #1e293b;
+      font-weight: 500;
+    }
+    .btn-home {
+      display: inline-block;
+      background: linear-gradient(135deg, #2563eb, #1e40af);
+      color: white;
+      padding: 12px 30px;
+      border-radius: 8px;
+      text-decoration: none;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+    }
+    .btn-home:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+    }
+    .error-message {
+      background: #fef2f2;
+      color: #dc2626;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+    .error-message.active {
+      display: flex;
+    }
+    .test-card-info {
+      background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+      border: 2px dashed #2563eb;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+    .test-card-info h4 {
+      color: #1e40af;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .test-card-info h4 i {
+      color: #2563eb;
+    }
+    .test-card-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .test-card-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: white;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+    .test-card-row span:first-child {
+      color: #64748b;
+    }
+    .test-card-row span:last-child {
+      color: #1e293b;
+      font-weight: 600;
+      font-family: monospace;
+    }
+    .test-mode-badge {
+      display: inline-block;
+      background: #f59e0b;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <a href="cart.html" class="back-link">
+    <i class="fas fa-arrow-left"></i> Back to Cart
+  </a>
+
+  <div class="payment-container">
+    <!-- Payment Form Section -->
+    <div id="paymentSection">
+      <div class="payment-header">
+        <h1><i class="fas fa-lock"></i> Secure Payment</h1>
+        <p>Complete your purchase safely and securely</p>
+      </div>
+      
+      <div class="payment-body">
+        <div id="errorMessage" class="error-message">
+          <i class="fas fa-exclamation-circle"></i>
+          <span id="errorText"></span>
+        </div>
+
+        <div class="test-card-info">
+          <h4><i class="fas fa-info-circle"></i> Test Card Details <span class="test-mode-badge">TEST MODE</span></h4>
+          <div class="test-card-details">
+            <div class="test-card-row">
+              <span>Card Number</span>
+              <span>5267 7447 8797 7447</span>
+            </div>
+            <div class="test-card-row">
+              <span>Expiry</span>
+              <span>12/25</span>
+            </div>
+            <div class="test-card-row">
+              <span>CVV</span>
+              <span>123</span>
+            </div>
+            <div class="test-card-row">
+              <span>OTP</span>
+              <span>123456</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="order-summary">
+          <h3><i class="fas fa-shopping-cart"></i> Order Summary</h3>
+          <div id="orderItems"></div>
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span id="subtotal">₹0</span>
+          </div>
+          <div class="summary-row">
+            <span>GST (18%)</span>
+            <span id="tax">₹0</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total Amount</span>
+            <span id="totalAmount">₹0</span>
+          </div>
+        </div>
+
+        <div class="payment-methods">
+          <h3><i class="fas fa-credit-card"></i> Select Payment Method</h3>
+          
+          <label class="method-option active" onclick="selectMethod('razorpay')">
+            <input type="radio" name="paymentMethod" value="razorpay" checked>
+            <div class="method-icon">
+              <i class="fas fa-credit-card"></i>
+            </div>
+            <div class="method-info">
+              <h4>Razorpay</h4>
+              <p>Pay securely with Credit/Debit Card, UPI, Net Banking</p>
+            </div>
+          </label>
+
+          <label class="method-option" onclick="selectMethod('cod')">
+            <input type="radio" name="paymentMethod" value="cod">
+            <div class="method-icon">
+              <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="method-info">
+              <h4>Cash on Delivery</h4>
+              <p>Pay when you receive your bike</p>
+            </div>
+          </label>
+        </div>
+
+        <button class="btn-pay" id="payBtn" onclick="processPayment()">
+          <i class="fas fa-lock"></i>
+          <span id="payBtnText">Pay Now</span>
+        </button>
+
+        <div class="secure-badge">
+          <i class="fas fa-shield-alt"></i>
+          <span>256-bit SSL Encryption | PCI DSS Compliant</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success Section -->
+    <div id="successSection" class="success-message">
+      <div class="success-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      <h2>Payment Successful!</h2>
+      <p>Thank you for your purchase. Your order has been confirmed.</p>
+      
+      <div class="order-details">
+        <h4>Order Details</h4>
+        <div class="detail-row">
+          <span>Order ID</span>
+          <span id="orderId"></span>
+        </div>
+        <div class="detail-row">
+          <span>Payment ID</span>
+          <span id="paymentId"></span>
+        </div>
+        <div class="detail-row">
+          <span>Amount Paid</span>
+          <span id="amountPaid"></span>
+        </div>
+        <div class="detail-row">
+          <span>Payment Method</span>
+          <span id="paymentMethodUsed"></span>
+        </div>
+        <div class="detail-row">
+          <span>Delivery Address</span>
+          <span id="deliveryAddress"></span>
+        </div>
+      </div>
+
+      <a href="HomePage.html" class="btn-home">
+        <i class="fas fa-home"></i> Return to Home
+      </a>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="spinner"></div>
+    <p style="color: white; margin-top: 20px;">Processing your payment...</p>
+  </div>
+
+  <!-- Razorpay Checkout Script -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  
+  <script>
+    // Get order details from localStorage
+    let checkoutCart = JSON.parse(localStorage.getItem('checkoutCart')) || [];
+    let userDetails = JSON.parse(localStorage.getItem('userDetails')) || {};
+    let selectedMethod = 'razorpay';
+
+    // Calculate totals
+    let subtotal = 0;
+    checkoutCart.forEach(item => {
+      subtotal += parseFloat(item.price) || 0;
+    });
+    let tax = subtotal * 0.18;
+    let total = subtotal + tax;
+
+    // Display order summary
+    function displayOrderSummary() {
+      const orderItemsDiv = document.getElementById('orderItems');
+      
+      if (checkoutCart.length === 0) {
+        showError('No items in cart. Please add items before proceeding.');
+        setTimeout(() => {
+          window.location.href = 'cart.html';
+        }, 2000);
+        return;
+      }
+
+      // Display items
+      let itemsHtml = '';
+      checkoutCart.forEach(item => {
+        itemsHtml += `
+          <div class="summary-row" style="font-size: 0.9rem;">
+            <span>${item.name}</span>
+            <span>₹${parseFloat(item.price).toLocaleString('en-IN')}</span>
+          </div>
+        `;
+      });
+      orderItemsDiv.innerHTML = itemsHtml;
+
+      // Update totals
+      document.getElementById('subtotal').textContent = '₹' + subtotal.toLocaleString('en-IN');
+      document.getElementById('tax').textContent = '₹' + tax.toLocaleString('en-IN', {maximumFractionDigits: 2});
+      document.getElementById('totalAmount').textContent = '₹' + total.toLocaleString('en-IN', {maximumFractionDigits: 2});
+    }
+
+    // Select payment method
+    function selectMethod(method) {
+      selectedMethod = method;
+      document.querySelectorAll('.method-option').forEach(el => el.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      
+      // Update button text
+      const btnText = document.getElementById('payBtnText');
+      if (method === 'cod') {
+        btnText.textContent = 'Place Order (Cash on Delivery)';
+      } else {
+        btnText.textContent = 'Pay Now';
+      }
+    }
+
+    // Show error message
+    function showError(message) {
+      const errorDiv = document.getElementById('errorMessage');
+      document.getElementById('errorText').textContent = message;
+      errorDiv.classList.add('active');
+      setTimeout(() => {
+        errorDiv.classList.remove('active');
+      }, 5000);
+    }
+
+    // Show loading
+    function showLoading(show) {
+      const overlay = document.getElementById('loadingOverlay');
+      if (show) {
+        overlay.classList.add('active');
+      } else {
+        overlay.classList.remove('active');
+      }
+    }
+
+    // Process payment
+    function processPayment() {
+      if (checkoutCart.length === 0) {
+        showError('Your cart is empty!');
+        return;
+      }
+
+      if (selectedMethod === 'cod') {
+        processCOD();
+      } else {
+        processRazorpay();
+      }
+    }
+
+    // Process Cash on Delivery
+    function processCOD() {
+      showLoading(true);
+      
+      setTimeout(() => {
+        showLoading(false);
+        const orderId = 'ORD' + Date.now();
+        saveOrder(orderId, 'COD', 'COD-' + Date.now());
+        showSuccess(orderId, 'COD-' + Date.now(), 'Cash on Delivery');
+      }, 1500);
+    }
+
+    // Process Razorpay Payment
+    function processRazorpay() {
+      // Razorpay Test API Key
+      const RAZORPAY_KEY = 'rzp_test_SZURCpBoE5NqW3';
+
+      const options = {
+        key: RAZORPAY_KEY,
+        amount: Math.round(total * 100), // Amount in paise
+        currency: 'INR',
+        name: 'SpeedX Bike Showroom',
+        description: 'Bike Purchase - ' + checkoutCart.length + ' item(s)',
+        image: 'https://img.icons8.com/fluency/48/motorcycle.png',
+        prefill: {
+          name: userDetails.name || '',
+          email: userDetails.email || '',
+          contact: userDetails.phone || ''
+        },
+        theme: {
+          color: '#2563eb'
+        },
+        modal: {
+          ondismiss: function() {
+            console.log('Payment modal closed');
+          }
+        },
+        handler: function(response) {
+          // Payment successful
+          showLoading(true);
+          
+          const orderId = 'ORD' + Date.now();
+          saveOrder(orderId, 'Razorpay', response.razorpay_payment_id);
+          
+          setTimeout(() => {
+            showLoading(false);
+            showSuccess(orderId, response.razorpay_payment_id, 'Razorpay');
+          }, 1000);
+        }
+      };
+
+      const rzp = new Razorpay(options);
+      
+      rzp.on('payment.failed', function(response) {
+        showError('Payment failed: ' + response.error.description);
+      });
+
+      rzp.open();
+    }
+
+    // Save order to localStorage
+    function saveOrder(orderId, method, paymentId) {
+      const order = {
+        orderId: orderId,
+        paymentId: paymentId,
+        paymentMethod: method,
+        items: checkoutCart,
+        subtotal: subtotal,
+        tax: tax,
+        total: total,
+        userDetails: userDetails,
+        orderDate: new Date().toISOString(),
+        status: 'Confirmed'
+      };
+
+      // Get existing orders
+      let orders = JSON.parse(localStorage.getItem('orders')) || [];
+      orders.push(order);
+      localStorage.setItem('orders', JSON.stringify(orders));
+
+      // Clear cart
+      localStorage.removeItem('cartItems');
+      localStorage.removeItem('checkoutCart');
+      localStorage.removeItem('orderTotal');
+    }
+
+    // Show success message
+    function showSuccess(orderId, paymentId, method) {
+      document.getElementById('paymentSection').style.display = 'none';
+      document.getElementById('successSection').classList.add('active');
+      
+      document.getElementById('orderId').textContent = orderId;
+      document.getElementById('paymentId').textContent = paymentId;
+      document.getElementById('amountPaid').textContent = '₹' + total.toLocaleString('en-IN', {maximumFractionDigits: 2});
+      document.getElementById('paymentMethodUsed').textContent = method;
+      document.getElementById('deliveryAddress').textContent = 
+        (userDetails.address || '') + ', ' + (userDetails.city || '') + ' - ' + (userDetails.pincode || '');
+    }
+
+    // Initialize
+    window.onload = function() {
+      displayOrderSummary();
+    };
+  </script>
+</body>
+</html>

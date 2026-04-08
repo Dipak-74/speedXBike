@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Service Admin</title>
+
+<style>
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #0f172a;
+  color: white;
+  padding: 20px;
+}
+
+h2, h3 {
+  text-align: center;
+}
+
+form {
+  max-width: 500px;
+  margin: auto;
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 6px;
+  border: none;
+  background: #334155;
+  color: white;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  background: #3b82f6;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #2563eb;
+}
+
+#list {
+  max-width: 500px;
+  margin: 30px auto;
+}
+
+#list div {
+  background: #1e293b;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.delete-btn {
+  background: red;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+#preview {
+  width: 100%;
+  margin-top: 10px;
+  border-radius: 8px;
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<h2>🔥 Add Service</h2>
+
+<form id="serviceForm">
+  <input type="text" id="title" placeholder="Service Title" required>
+  <textarea id="description" placeholder="Description"></textarea>
+
+  <label>Choose Image Option:</label>
+  <select id="imageType">
+    <option value="url">Image URL</option>
+    <option value="file">Upload Image</option>
+  </select>
+
+  <input type="text" id="imageUrl" placeholder="Enter Image URL">
+  <input type="file" id="imageFile" accept="image/*">
+
+  <img id="preview">
+
+  <input type="number" id="price" placeholder="Price">
+
+  <select id="type">
+    <option value="general">General Service</option>
+    <option value="bike">Bike Service</option>
+  </select>
+
+  <button type="submit">Add Service</button>
+</form>
+
+<hr>
+
+<h3>📋 All Services</h3>
+<div id="list"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// 🔥 Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyAhWXQg6VYvz8JcrPu42Y__oGkARfi0x1U",
+  authDomain: "bikeroom-765b8.firebaseapp.com",
+  projectId: "bikeroom-765b8",
+  storageBucket: "bikeroom-765b8.appspot.com",
+  messagingSenderId: "505548164349",
+  appId: "1:505548164349:web:6f1111e3b71f5643ca0294"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const form = document.getElementById("serviceForm");
+const list = document.getElementById("list");
+
+const imageType = document.getElementById("imageType");
+const imageUrl = document.getElementById("imageUrl");
+const imageFile = document.getElementById("imageFile");
+const preview = document.getElementById("preview");
+
+// 🔥 INITIAL
+imageFile.style.display = "none";
+
+// 🔥 TOGGLE
+imageType.addEventListener("change", () => {
+  preview.style.display = "none";
+  imageUrl.value = "";
+  imageFile.value = "";
+
+  if (imageType.value === "url") {
+    imageUrl.style.display = "block";
+    imageFile.style.display = "none";
+  } else {
+    imageUrl.style.display = "none";
+    imageFile.style.display = "block";
+  }
+});
+
+// 🔥 URL PREVIEW
+imageUrl.addEventListener("input", () => {
+  if (imageUrl.value.trim() !== "") {
+    preview.src = imageUrl.value;
+    preview.style.display = "block";
+  } else {
+    preview.style.display = "none";
+  }
+});
+
+// 🔥 FILE PREVIEW
+imageFile.addEventListener("change", () => {
+  const file = imageFile.files[0];
+  if (file) {
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+  }
+});
+
+// 🔥 ADD SERVICE with Cloudinary
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const title = document.getElementById("title").value;
+  const description = document.getElementById("description").value;
+  const price = document.getElementById("price").value;
+  const type = document.getElementById("type").value;
+
+  let finalImage = "";
+
+  if (imageType.value === "url") {
+    finalImage = imageUrl.value;
+  } else {
+    const file = imageFile.files[0];
+    if (file) {
+      // 🔥 Upload to Cloudinary
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "bike_upload"); // replace with your Cloudinary preset
+
+      const res = await fetch("https://api.cloudinary.com/v1_1/dvxnmsryu/image/upload", { // replace YOUR_CLOUD_NAME
+        method: "POST",
+        body: formData
+      });
+
+      const data = await res.json();
+      finalImage = data.secure_url; // Cloud-hosted URL
+    }
+  }
+
+  await addDoc(collection(db, "services"), {
+    title,
+    description,
+    imageUrl: finalImage,
+    price,
+    type
+  });
+
+  alert("✅ Service Added");
+
+  form.reset();
+  preview.style.display = "none";
+});
+
+// 🔥 DISPLAY + DELETE
+onSnapshot(collection(db, "services"), (snapshot) => {
+  list.innerHTML = "";
+
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    const id = docSnap.id;
+
+    const div = document.createElement("div");
+
+    div.innerHTML = `
+      <span>${data.title}</span>
+      <button class="delete-btn" onclick="deleteService('${id}')">Delete</button>
+    `;
+
+    list.appendChild(div);
+  });
+});
+
+// 🔥 DELETE
+window.deleteService = async (id) => {
+  if (confirm("Delete this service?")) {
+    await deleteDoc(doc(db, "services", id));
+  }
+};
+</script>
+
+</body>
+</html>

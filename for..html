@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bike Details Form</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column; /* 🔥 only needed for 2 forms */
+            min-height: 100vh;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            width: 400px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.5s ease;
+            margin-bottom: 20px; /* 🔥 spacing */
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #1e3a8a;
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            color: #1e3a8a;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 5px rgba(37, 99, 235, 0.3);
+        }
+
+        input[type="file"] {
+            padding: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #2563eb;
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media(max-width: 480px) {
+            .container {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ✅ ADD BIKE -->
+    <div class="container">
+        <h1>Add Bike</h1>
+
+        <form id="bikeForm">
+
+            <label>Bike Name:</label>
+            <input type="text" id="name" required>
+
+            <label>Company:</label>
+            <input type="text" id="company" required>
+
+            <label>Model:</label>
+            <input type="text" id="model" required>
+
+            <label>Model Year:</label>
+            <input type="number" id="year" required>
+
+            <label>Price:</label>
+            <input type="number" id="price" required>
+
+            <label>Color:</label>
+            <input type="text" id="color" required>
+
+            <label>Engine:</label>
+            <input type="text" id="engine" required>
+
+            <label>CC:</label>
+            <input type="number" id="cc" required>
+
+            <label>Mileage:</label>
+            <input type="number" step="0.1" id="average" required>
+
+            <label>Bike Info Line 1:</label>
+            <input type="text" id="info1" required>
+
+            <label>Bike Info Line 2:</label>
+            <input type="text" id="info2" required>
+
+            <label>Bike Info Line 3:</label>
+            <input type="text" id="info3" required>
+
+            <label>Bike Info Line 4:</label>
+            <input type="text" id="info4" required>
+
+            <label>Bike Type / Badge:</label>
+            <input type="text" id="badge" placeholder="Ex: New, Sport, Premium, Economy">
+
+            <label>Bike Image:</label>
+            <input type="file" id="image" accept="image/*" required>
+
+            <button type="submit">Add Bike</button>
+
+        </form>
+    </div>
+
+    <!-- ❌ DELETE BIKE -->
+    <div class="container">
+        <h1>Delete Bike</h1>
+
+        <form id="deleteForm">
+            <label>Enter Bike Name:</label>
+            <input type="text" id="deleteName" required>
+
+            <button type="submit" style="background:red;">Delete Bike</button>
+        </form>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAhWXQg6VYvz8JcrPu42Y__oGkARfi0x1U",
+            authDomain: "bikeroom-765b8.firebaseapp.com",
+            projectId: "bikeroom-765b8",
+            storageBucket: "bikeroom-765b8.appspot.com",
+            messagingSenderId: "505548164349",
+            appId: "1:505548164349:web:6f1111e3b71f5643ca0294"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const form = document.getElementById("bikeForm");
+
+        // ✅ ADD
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const imageFile = document.getElementById("image").files[0];
+
+            if (!imageFile) {
+                alert("Please select image ❌");
+                return;
+            }
+
+            const btn = form.querySelector("button");
+            btn.disabled = true;
+            btn.textContent = "Uploading...";
+
+            try {
+                const formData = new FormData();
+                formData.append("file", imageFile);
+                formData.append("upload_preset", "bike_upload");
+
+                const res = await fetch(`https://api.cloudinary.com/v1_1/dvxnmsryu/image/upload`, {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await res.json();
+
+                if (!data.secure_url) {
+                    alert("Image upload failed ❌");
+                    btn.disabled = false;
+                    btn.textContent = "Add Bike";
+                    return;
+                }
+
+                await addDoc(collection(db, "bikes"), {
+                    name: document.getElementById("name").value.trim(),
+                    company: document.getElementById("company").value.trim(),
+                    model: document.getElementById("model").value.trim(),
+                    year: document.getElementById("year").value,
+                    price: document.getElementById("price").value,
+                    color: document.getElementById("color").value.trim(),
+                    engine: document.getElementById("engine").value.trim(),
+                    cc: document.getElementById("cc").value,
+                    average: document.getElementById("average").value,
+                    info1: document.getElementById("info1").value.trim(),
+                    info2: document.getElementById("info2").value.trim(),
+                    info3: document.getElementById("info3").value.trim(),
+                    info4: document.getElementById("info4").value.trim(),
+                    badge: document.getElementById("badge").value.trim(),
+                    image: data.secure_url,
+                    createdAt: new Date()
+                });
+
+                alert("Bike Added Successfully ✅");
+                form.reset();
+            } catch (err) {
+                alert("Error: " + err.message);
+                console.error(err);
+            }
+
+            btn.disabled = false;
+            btn.textContent = "Add Bike";
+        });
+
+        
+       // ❌ DELETE (FIXED)
+document.getElementById("deleteForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const nameToDelete = deleteName.value.trim().toLowerCase();
+
+    const snapshot = await getDocs(collection(db, "bikes"));
+
+    let found = false;
+
+    for (const docSnap of snapshot.docs) {
+        const bike = docSnap.data();
+
+        if (bike.name.trim().toLowerCase() === nameToDelete) {
+            await deleteDoc(doc(db, "bikes", docSnap.id));
+            found = true;
+        }
+    }
+
+    if (found) {
+        alert("Bike Deleted ✅");
+    } else {
+        alert("Bike Not Found ❌");
+    }
+
+    deleteForm.reset();
+});  </script>
+
+    <!-- Back Button -->
+    <a href="admin.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Admin</a>
+
+</body>
+</html>

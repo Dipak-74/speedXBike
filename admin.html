@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SpeedX - Dashboard</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+    body {
+        background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        font-family: 'Inter', sans-serif;
+        margin: 0;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        padding: 40px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        align-items: center;
+    }
+
+    .btn {
+        padding: 15px 50px;
+        margin: 5px;
+        border: none;
+        border-radius: 12px;
+        font-size: 18px;
+        cursor: pointer;
+        color: white;
+        text-decoration: none;
+        transition: transform 0.3s, box-shadow 0.3s;
+        min-width: 200px;
+        text-align: center;
+    }
+
+    .btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn1 { background-color: #2563eb; }   /* Bike Add */
+    .btn2 { background-color: #277d6a; }   /* Latest Bike */
+    .btn3 { background-color: #cfc460; color:#000; }   /* Blog */
+    .btn4 { background-color: #7d2727; }   /* Service */
+    .btn5 { background-color: #82166a; }   /* Team */
+    .btn7 { background-color: #059669; }   /* Offers */
+    .btn6 { background-color: #ef4444; }   /* Logout */
+
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2 style="color: white; margin-bottom: 20px;">Admin Panel</h2>
+    <a href="admin-dashboard.html" class="btn btn1" style="background: #7c3aed;">Dashboard & Analytics</a>
+    <a href="for..html" class="btn btn1">Bike Add</a>
+    <a href="formlatestbike.html" class="btn btn2">Latest Bike</a>
+    <a href="blogform.html" class="btn btn3">Blog</a>
+    <a href="serviceFormPage.html" class="btn btn4">Service</a>
+    <a href="teamForm.html" class="btn btn5">Team</a>
+    <a href="offerform.html" class="btn btn7"><i class="fas fa-tags"></i> Manage Offers</a>
+    <a href="HomePage.html" class="btn" style="background: #3b82f6;">View Website</a>
+    <button class="btn btn6" id="logoutBtn">Logout</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+// Firebase config
+const firebaseConfig = {
+    apiKey: "AIzaSyAhWXQg6VYvz8JcrPu42Y__oGkARfi0x1U",
+    authDomain: "bikeroom-765b8.firebaseapp.com",
+    projectId: "bikeroom-765b8",
+    appId: "1:505548164349:web:6f1111e3b71f5643ca0294"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+document.getElementById('logoutBtn').onclick = async () => {
+    try {
+        await signOut(auth);
+        alert("You have been logged out!");
+        window.location.href = "login.html"; // Redirect to login page
+    } catch (err) {
+        console.error(err);
+        alert("Error logging out: " + err.message);
+    }
+};
+</script>
+
+</body>
+</html>

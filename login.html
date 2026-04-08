@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SpeedX - Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+<style>
+body {
+    font-family:'Inter',sans-serif;
+    background: linear-gradient(135deg,#1e3a8a,#3b82f6);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+}
+.container {
+    background:white;
+    padding:2rem;
+    border-radius:15px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.2);
+    width:350px;
+}
+.container h2 {
+    text-align:center;
+    margin-bottom:1.5rem;
+    color:#2563eb;
+}
+input {
+    width:100%;
+    padding:0.8rem;
+    margin-bottom:1rem;
+    border-radius:8px;
+    border:1px solid #ccc;
+}
+button {
+    width:100%;
+    padding:0.8rem;
+    background:#2563eb;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:600;
+}
+button:hover {
+    background:#1e40af;
+}
+p {
+    text-align:center;
+    margin-top:1rem;
+    color:white;
+}
+a {
+    color:#facc15;
+    text-decoration:underline;
+}
+#errorMsg {
+    background:#ef4444;
+    color:white;
+    padding:0.6rem;
+    border-radius:6px;
+    text-align:center;
+    margin-bottom:1rem;
+    display:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Login</h2>
+    <div id="errorMsg"></div>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button id="loginBtn">Login</button>
+    <p>Don't have an account? <a href="register.html">Register</a></p>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// Firebase config
+const firebaseConfig = {
+    apiKey: "AIzaSyAhWXQg6VYvz8JcrPu42Y__oGkARfi0x1U",
+    authDomain: "bikeroom-765b8.firebaseapp.com",
+    projectId: "bikeroom-765b8",
+    appId: "1:505548164349:web:6f1111e3b71f5643ca0294"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const loginBtn = document.getElementById('loginBtn');
+const errorMsg = document.getElementById('errorMsg');
+
+loginBtn.onclick = async () => {
+    errorMsg.style.display = 'none';
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    if (!email || !password) {
+        errorMsg.textContent = "All fields are required!";
+        errorMsg.style.display = 'block';
+        return;
+    }
+
+    try {
+        // 🔹 Admin check - BEFORE Firebase login
+        if (email === "dipak74@gmail.com" && password === "admin@123") {
+            window.location.href = "admin.html";
+            return;
+        }
+
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Optional: you can fetch Firestore user data for debugging/logging
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        if(docSnap.exists()){
+            console.log("User data:", docSnap.data());
+        }
+
+        // Redirect normal user to Profile or Homepage
+        window.location.href = "profile1.html";
+
+    } catch (err) {
+        console.error(err);
+        errorMsg.textContent = err.message;
+        errorMsg.style.display = 'block';
+    }
+};
+</script>
+
+</body>
+</html>
