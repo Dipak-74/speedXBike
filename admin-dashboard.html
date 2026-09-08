@@ -485,7 +485,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, query, orderBy, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAhWXQg6VYvz8JcrPu42Y__oGkARfi0x1U",
@@ -501,7 +501,23 @@
 
         // Load Dashboard Data
         async function loadDashboardData() {
-            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            const localOrders = JSON.parse(localStorage.getItem('orders')) || [];
+            let firebaseOrders = [];
+            try {
+                const snapshot = await getDocs(collection(db, 'orders'));
+                snapshot.forEach(orderDoc => firebaseOrders.push({
+                    firestoreId: orderDoc.id,
+                    ...orderDoc.data()
+                }));
+            } catch (error) {
+                console.error('Could not load Firestore orders:', error);
+            }
+
+            const ordersById = new Map();
+            [...localOrders, ...firebaseOrders].forEach(order => {
+                if (order.orderId) ordersById.set(order.orderId, { ...ordersById.get(order.orderId), ...order });
+            });
+            const orders = Array.from(ordersById.values());
             allOrders = orders;
             
             // Calculate statistics
@@ -658,6 +674,11 @@
                 const row = document.createElement('tr');
                 const bikeName = order.items?.[0]?.name || 'Unknown Bike';
                 const bikeRating = ratings[bikeName]?.rating || 0;
+                const status = order.paymentStatus || order.status || 'Confirmed';
+                const verificationAction = status === 'Pending Verification' && order.firestoreId
+                    ? `<button onclick="updatePaymentStatus('${order.firestoreId}', 'Confirmed')">Confirm</button>
+                       <button onclick="updatePaymentStatus('${order.firestoreId}', 'Rejected')">Reject</button>`
+                    : '';
                 
                 row.innerHTML = `
                     <td>${order.orderId}</td>
@@ -665,7 +686,7 @@
                     <td>${bikeName}</td>
                     <td>₹${(order.total || 0).toLocaleString('en-IN')}</td>
                     <td>${new Date(order.orderDate).toLocaleDateString()}</td>
-                    <td><span class="status-badge status-confirmed">Confirmed</span></td>
+                    <td><span class="status-badge status-confirmed">${status}</span>${verificationAction}</td>
                     <td>
                         <div class="bike-rating">
                             ${generateStars(bikeRating)}
@@ -676,6 +697,20 @@
                 tbody.appendChild(row);
             });
         }
+
+        window.updatePaymentStatus = async function(firestoreId, status) {
+            try {
+                await updateDoc(doc(db, 'orders', firestoreId), {
+                    paymentStatus: status,
+                    status,
+                    verifiedAt: new Date().toISOString()
+                });
+                await loadDashboardData();
+            } catch (error) {
+                console.error(error);
+                alert('Could not update payment status.');
+            }
+        };
 
         function generateStars(rating) {
             let stars = '';
@@ -761,4 +796,5 @@
         loadDashboardData();
     </script>
 </body>
+<script type="module" src="auth-guard.js"></script>
 </html>

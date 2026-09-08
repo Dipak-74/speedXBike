@@ -156,12 +156,6 @@ document.getElementById('registerBtn').onclick = async () => {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
 
     try {
-        // Check for admin credentials
-        if (email === "dipak74@gmail.com" && password === "admin@123") {
-            window.location.href = "admin.html";
-            return;
-        }
-
         // 1️⃣ Create user in Firebase Auth
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;

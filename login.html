@@ -112,12 +112,6 @@ loginBtn.onclick = async () => {
     }
 
     try {
-        // 🔹 Admin check - BEFORE Firebase login
-        if (email === "dipak74@gmail.com" && password === "admin@123") {
-            window.location.href = "admin.html";
-            return;
-        }
-
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
@@ -128,8 +122,14 @@ loginBtn.onclick = async () => {
             console.log("User data:", docSnap.data());
         }
 
-        // Redirect normal user to Profile or Homepage
-        window.location.href = "profile1.html";
+        if (user.email === "dipak74@gmail.com") {
+            window.location.href = "admin.html";
+        } else {
+            const returnTo = new URLSearchParams(window.location.search).get('returnTo');
+            const safeReturnTo = returnTo && !returnTo.startsWith('/') &&
+                !returnTo.includes('://') ? returnTo : null;
+            window.location.href = safeReturnTo || "profile1.html";
+        }
 
     } catch (err) {
         console.error(err);

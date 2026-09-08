@@ -1470,7 +1470,6 @@ loadBlogs();
         </div>
     </footer>
 
-    <script src="js/main.js"></script>
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <script>
         // Navbar Scroll Effect
@@ -1484,13 +1483,15 @@ loadBlogs();
         });
 
         // Mobile Menu Toggle
-        const burger = document.querySelector('.burger');
+        const burger = document.getElementById('mobileMenuBtn');
         const nav = document.querySelector('.nav-links');
 
-        burger.addEventListener('click', () => {
-            nav.classList.toggle('active');
-            burger.classList.toggle('toggle');
-        });
+        if (burger && nav) {
+            burger.addEventListener('click', () => {
+                nav.classList.toggle('active');
+                burger.classList.toggle('toggle');
+            });
+        }
 
         // Smooth Scroll
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -1540,7 +1541,7 @@ loadBlogs();
 
             const user = JSON.parse(localStorage.getItem('user'));
 
-            if (user && user.isLoggedIn) {
+            if (userProfile && user && user.isLoggedIn) {
                 // User is logged in
                 authButtons.classList.add('hidden');
                 userProfile.classList.remove('hidden');
@@ -1552,7 +1553,7 @@ loadBlogs();
                     localStorage.removeItem('user');
                     window.location.reload(); // Reload to update UI
                 });
-            } else {
+            } else if (userProfile) {
                 // User is not logged in
                 authButtons.classList.remove('hidden');
                 userProfile.classList.add('hidden');
@@ -1568,18 +1569,18 @@ loadBlogs();
             if (isLoggedIn) {
                 // Show user name in nav
                 const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-                if (currentUser && currentUser.customerName) {
+                if (profileUserName && currentUser && currentUser.customerName) {
                     profileUserName.textContent = currentUser.customerName;
-                } else {
+                } else if (profileUserName) {
                     profileUserName.textContent = 'Profile';
                 }
-                profileBtn.classList.remove('hidden');
-                loginBtn.classList.add('hidden');
-                registerBtn.classList.add('hidden');
+                if (profileBtn) profileBtn.classList.remove('hidden');
+                if (loginBtn) loginBtn.classList.add('hidden');
+                if (registerBtn) registerBtn.classList.add('hidden');
             } else {
-                profileBtn.classList.add('hidden');
-                loginBtn.classList.remove('hidden');
-                registerBtn.classList.remove('hidden');
+                if (profileBtn) profileBtn.classList.add('hidden');
+                if (loginBtn) loginBtn.classList.remove('hidden');
+                if (registerBtn) registerBtn.classList.remove('hidden');
             }
         }
         document.addEventListener('DOMContentLoaded', updateNavAuthButtons);
@@ -1611,6 +1612,39 @@ loadBlogs();
                 icon.classList.remove('fa-times');
                 icon.classList.add('fa-bars');
             });
+        });
+    </script>
+
+    <!-- Homepage is public; every other action requires an authenticated user. -->
+    <script type="module">
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+        const auth = getAuth();
+        let authReady;
+        const authLoaded = new Promise(resolve => {
+            onAuthStateChanged(auth, user => {
+                authReady = user;
+                resolve();
+            });
+        });
+
+        document.addEventListener('click', async event => {
+            const link = event.target.closest('a[href]');
+            if (!link || link.target === '_blank') return;
+
+            const href = link.getAttribute('href');
+            if (!href || href.startsWith('#') ||
+                href === 'HomePage.html' || href.startsWith('login.html') ||
+                href.startsWith('register.html')) return;
+
+            event.preventDefault();
+            await authLoaded;
+            if (authReady) {
+                window.location.href = href;
+            } else {
+                const returnTo = href;
+                window.location.href = `login.html?returnTo=${encodeURIComponent(returnTo)}`;
+            }
         });
     </script>
 

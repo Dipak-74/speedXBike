@@ -780,13 +780,7 @@ window.bookService = (name) => {
       });
     });
 
-    // Add booking functionality
-    document.querySelectorAll('button').forEach(button => {
-      button.addEventListener('click', function() {
-        const service = this.parentElement.querySelector('h3').textContent;
-        alert(`Thank you for choosing ${service}! Our team will contact you shortly to confirm your booking.`);
-      });
-    });
   </script>
 </body>
+<script type="module" src="auth-guard.js"></script>
 </html>

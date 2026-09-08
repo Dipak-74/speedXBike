@@ -56,6 +56,12 @@
     payBtn.addEventListener('click', () => {
       // Get order total from localStorage
       let total = parseFloat(localStorage.getItem('orderTotal') || '0');
+      if (total <= 0) {
+        const checkoutCart = JSON.parse(localStorage.getItem('checkoutCart') || '[]');
+        const subtotal = checkoutCart.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0);
+        total = subtotal * 1.18;
+        if (total > 0) localStorage.setItem('orderTotal', String(total));
+      }
       if(total <= 0){
         alert('No order found. Please go back and add items.');
         window.location.href = 'index.html';
@@ -87,7 +93,7 @@
         modal: {
           ondismiss: function(){
             alert("Payment cancelled. You can retry.");
-            window.location.href = 'buynow.html';
+            window.location.href = 'buy-now.html';
           }
         }
       };
@@ -155,4 +161,5 @@
     }
   </script>
 </body>
+<script type="module" src="auth-guard.js"></script>
 </html>

@@ -397,8 +397,9 @@ function startPayment() {
     localStorage.setItem('checkoutCart', JSON.stringify(checkoutCart));
   }
 
-  window.location.href = 'bpayment.html';
+  window.location.href = 'payment.html';
 }
 </script>
 </body>
-</html> 
+<script type="module" src="auth-guard.js"></script>
+</html>

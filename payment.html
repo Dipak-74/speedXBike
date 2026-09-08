@@ -394,18 +394,18 @@
         <div class="payment-methods">
           <h3><i class="fas fa-credit-card"></i> Select Payment Method</h3>
           
-          <label class="method-option active" onclick="selectMethod('razorpay')">
-            <input type="radio" name="paymentMethod" value="razorpay" checked>
+          <label class="method-option active" onclick="selectMethod('upi', event)">
+            <input type="radio" name="paymentMethod" value="upi" checked>
             <div class="method-icon">
-              <i class="fas fa-credit-card"></i>
+              <i class="fas fa-mobile-alt"></i>
             </div>
             <div class="method-info">
-              <h4>Razorpay</h4>
-              <p>Pay securely with Credit/Debit Card, UPI, Net Banking</p>
+              <h4>UPI Payment</h4>
+              <p>Pay securely using Google Pay, PhonePe, Paytm or any UPI app</p>
             </div>
           </label>
 
-          <label class="method-option" onclick="selectMethod('cod')">
+          <label class="method-option" onclick="selectMethod('cod', event)">
             <input type="radio" name="paymentMethod" value="cod">
             <div class="method-icon">
               <i class="fas fa-money-bill-wave"></i>
@@ -419,12 +419,12 @@
 
         <button class="btn-pay" id="payBtn" onclick="processPayment()">
           <i class="fas fa-lock"></i>
-          <span id="payBtnText">Pay Now</span>
+          <span id="payBtnText">Pay with UPI</span>
         </button>
 
         <div class="secure-badge">
           <i class="fas fa-shield-alt"></i>
-          <span>256-bit SSL Encryption | PCI DSS Compliant</span>
+          <span>Secure UPI payment | Order confirmed after admin verification</span>
         </div>
       </div>
     </div>
@@ -436,6 +436,7 @@
       </div>
       <h2>Payment Successful!</h2>
       <p>Thank you for your purchase. Your order has been confirmed.</p>
+      <div id="upiPaymentAction"></div>
       
       <div class="order-details">
         <h4>Order Details</h4>
@@ -473,14 +474,39 @@
     <p style="color: white; margin-top: 20px;">Processing your payment...</p>
   </div>
 
-  <!-- Razorpay Checkout Script -->
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-  
+  <script type="module">
+    import { getApps, getApp, initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { addDoc, collection, getFirestore, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAhWXQg6VYvz8JcrPu42Y__oGkARfi0x1U",
+      authDomain: "bikeroom-765b8.firebaseapp.com",
+      projectId: "bikeroom-765b8",
+      appId: "1:505548164349:web:6f1111e3b71f5643ca0294"
+    };
+    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+    const paymentDb = getFirestore(app);
+    const paymentAuth = getAuth(app);
+
+    window.savePendingUPIOrder = async order => {
+      const user = paymentAuth.currentUser;
+      if (!user) throw new Error('Please login before placing an order.');
+      const record = await addDoc(collection(paymentDb, 'orders'), {
+        ...order,
+        userId: user.uid,
+        paymentStatus: 'Pending Verification',
+        createdAt: serverTimestamp()
+      });
+      return record.id;
+    };
+  </script>
+
   <script>
     // Get order details from localStorage
     let checkoutCart = JSON.parse(localStorage.getItem('checkoutCart')) || [];
     let userDetails = JSON.parse(localStorage.getItem('userDetails')) || {};
-    let selectedMethod = 'razorpay';
+    let selectedMethod = 'upi';
 
     // Calculate totals
     let subtotal = 0;
@@ -493,6 +519,12 @@
     // Display order summary
     function displayOrderSummary() {
       const orderItemsDiv = document.getElementById('orderItems');
+      const pendingOrder = JSON.parse(localStorage.getItem('pendingUPIOrder') || 'null');
+
+      if (pendingOrder) {
+        showPending(pendingOrder.orderId, pendingOrder.total, pendingOrder.upiId, pendingOrder.upiUrl);
+        return;
+      }
       
       if (checkoutCart.length === 0) {
         showError('No items in cart. Please add items before proceeding.');
@@ -521,17 +553,17 @@
     }
 
     // Select payment method
-    function selectMethod(method) {
+    function selectMethod(method, clickEvent) {
       selectedMethod = method;
       document.querySelectorAll('.method-option').forEach(el => el.classList.remove('active'));
-      event.currentTarget.classList.add('active');
+      clickEvent.currentTarget.classList.add('active');
       
       // Update button text
       const btnText = document.getElementById('payBtnText');
       if (method === 'cod') {
         btnText.textContent = 'Place Order (Cash on Delivery)';
       } else {
-        btnText.textContent = 'Pay Now';
+        btnText.textContent = 'Pay with UPI';
       }
     }
 
@@ -565,7 +597,7 @@
       if (selectedMethod === 'cod') {
         processCOD();
       } else {
-        processRazorpay();
+        processUPI();
       }
     }
 
@@ -581,52 +613,45 @@
       }, 1500);
     }
 
-    // Process Razorpay Payment
-    function processRazorpay() {
-      // Razorpay Test API Key
-      const RAZORPAY_KEY = 'rzp_test_SZURCpBoE5NqW3';
-
-      const options = {
-        key: RAZORPAY_KEY,
-        amount: Math.round(total * 100), // Amount in paise
-        currency: 'INR',
-        name: 'SpeedX Bike Showroom',
-        description: 'Bike Purchase - ' + checkoutCart.length + ' item(s)',
-        image: 'https://img.icons8.com/fluency/48/motorcycle.png',
-        prefill: {
-          name: userDetails.name || '',
-          email: userDetails.email || '',
-          contact: userDetails.phone || ''
-        },
-        theme: {
-          color: '#2563eb'
-        },
-        modal: {
-          ondismiss: function() {
-            console.log('Payment modal closed');
-          }
-        },
-        handler: function(response) {
-          // Payment successful
-          showLoading(true);
-          
-          const orderId = 'ORD' + Date.now();
-          saveOrder(orderId, 'Razorpay', response.razorpay_payment_id);
-          
-          setTimeout(() => {
-            showLoading(false);
-            showSuccess(orderId, response.razorpay_payment_id, 'Razorpay');
-          }, 1000);
-        }
+    // Open a direct UPI payment and save the order as pending until admin verifies it.
+    async function processUPI() {
+      const orderId = 'ORD' + Date.now();
+      const upiId = '7083246105@ybi';
+      const upiUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent('SpeedX Bike Showroom')}&am=${total.toFixed(2)}&cu=INR&tn=${encodeURIComponent(orderId)}`;
+      const order = {
+        orderId,
+        paymentMethod: 'UPI',
+        paymentStatus: 'Pending Verification',
+        items: checkoutCart,
+        subtotal,
+        tax,
+        total,
+        userDetails,
+        upiId,
+        orderDate: new Date().toISOString()
       };
 
-      const rzp = new Razorpay(options);
-      
-      rzp.on('payment.failed', function(response) {
-        showError('Payment failed: ' + response.error.description);
-      });
-
-      rzp.open();
+      try {
+        showLoading(true);
+        const firestoreId = await window.savePendingUPIOrder(order);
+        order.firestoreId = firestoreId;
+        const orders = JSON.parse(localStorage.getItem('orders')) || [];
+        orders.push(order);
+        localStorage.setItem('orders', JSON.stringify(orders));
+        localStorage.setItem('pendingUPIOrder', JSON.stringify({ ...order, upiUrl }));
+        localStorage.removeItem('cartItems');
+        localStorage.removeItem('checkoutCart');
+        localStorage.removeItem('orderTotal');
+        showLoading(false);
+        if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+          window.location.href = upiUrl;
+        } else {
+          showPending(orderId, total, upiId, upiUrl);
+        }
+      } catch (error) {
+        showLoading(false);
+        showError(error.message || 'Could not create the payment order.');
+      }
     }
 
     // Save order to localStorage
@@ -668,10 +693,28 @@
         (userDetails.address || '') + ', ' + (userDetails.city || '') + ' - ' + (userDetails.pincode || '');
     }
 
+    function showPending(orderId, amount, upiId, upiUrl) {
+      document.getElementById('paymentSection').style.display = 'none';
+      document.getElementById('successSection').classList.add('active');
+      document.querySelector('#successSection h2').textContent = 'Payment Pending Verification';
+      document.querySelector('#successSection > p').textContent = `Pay ₹${amount.toLocaleString('en-IN', {maximumFractionDigits: 2})} to ${upiId}. Admin will confirm your order after checking the bank receipt.`;
+      document.getElementById('orderId').textContent = orderId;
+      document.getElementById('paymentId').textContent = 'Pending';
+      document.getElementById('amountPaid').textContent = '₹' + amount.toLocaleString('en-IN', {maximumFractionDigits: 2});
+      document.getElementById('paymentMethodUsed').textContent = 'UPI';
+      document.getElementById('deliveryAddress').textContent = `${userDetails.address || ''}, ${userDetails.city || ''} - ${userDetails.pincode || ''}`;
+      document.getElementById('upiPaymentAction').innerHTML = `
+        <p><strong>UPI ID:</strong> ${upiId}</p>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiUrl)}" alt="UPI payment QR code" style="width:220px;height:220px;margin:1rem auto;display:block">
+        <a href="${upiUrl}" class="btn-pay" style="display:inline-block;text-decoration:none">Open UPI App</a>
+      `;
+    }
+
     // Initialize
     window.onload = function() {
       displayOrderSummary();
     };
   </script>
 </body>
+<script type="module" src="auth-guard.js"></script>
 </html>
